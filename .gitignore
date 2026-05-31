@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# tamor-ui local clone
+.tamor-ui/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
