@@ -2,7 +2,7 @@
 set -euo pipefail
 
 TAMOR_DIR=".tamor-ui"
-TAMOR_REPO="git@github.com:tamorAI/ui.git"
+TAMOR_REPO="https://github.com/tamorAI/ui.git"
 BRANCH="main"
 
 # Bootstrap tamor-ui if not set up yet
