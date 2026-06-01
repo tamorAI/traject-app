@@ -119,7 +119,12 @@ export default function LoginPage() {
                   </motion.p>
                 )}
               </AnimatePresence>
-              <Button type="submit" loading={pending} className="w-full">
+              <Button
+                type="submit"
+                loading={pending}
+                size={"lg"}
+                className="w-full"
+              >
                 Sign in
               </Button>
             </motion.form>

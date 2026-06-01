@@ -7,7 +7,7 @@
     "build": "bash scripts/start.sh next build",
     "start": "next start",
     "lint": "eslint",
-    "setup": "bash scripts/start.sh true"
+    "setup": "bash scripts/start.sh true && bun install"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
