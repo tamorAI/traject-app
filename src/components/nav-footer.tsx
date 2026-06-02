@@ -109,7 +109,7 @@ export function NavFooter({
               </TooltipProvider>
             </div>
             <DropdownMenu>
-              <DropdownMenuTrigger>
+              <DropdownMenuTrigger asChild>
                 <Button
                   size="icon"
                   variant="ghost"

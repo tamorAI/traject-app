@@ -109,7 +109,7 @@ export default function AppearanceSettingsPage() {
                       onClick={() => setTheme(value)}
                       whileHover={{ y: -2 }}
                       whileTap={{ scale: 0.97 }}
-                      className={`group relative flex flex-col items-center gap-3 rounded-xl border p-4 text-center transition-all duration-300 ${
+                      className={`group relative flex flex-col items-center gap-3 border p-4 text-center transition-all duration-300 ${
                         isActive
                           ? `border-primary/30 ${ring} shadow-sm`
                           : "border-border/50 hover:border-border/80"
@@ -122,7 +122,7 @@ export default function AppearanceSettingsPage() {
                         <>
                           <motion.div
                             layoutId="theme-glow"
-                            className="absolute -inset-[2px] rounded-xl bg-primary/5 blur-md"
+                            className="absolute -inset-[2px] bg-primary/5 blur-md"
                             transition={{
                               type: "spring",
                               stiffness: 400,
@@ -131,7 +131,7 @@ export default function AppearanceSettingsPage() {
                           />
                           <motion.div
                             layoutId="theme-ring"
-                            className="absolute inset-0 rounded-xl ring-1 ring-primary/20"
+                            className="absolute inset-0 ring-1 ring-primary/20"
                             transition={{
                               type: "spring",
                               stiffness: 400,

@@ -95,7 +95,7 @@ export function SettingsSidebar() {
                         key={item.href}
                         href={item.href}
                         className={cn(
-                          "group flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-all duration-200",
+                          "group flex items-center gap-2.5 px-2.5 py-2 text-sm font-medium transition-all duration-200",
                           isActive
                             ? "bg-accent/60 text-foreground ring-1 ring-border/30"
                             : "text-muted-foreground hover:text-foreground hover:bg-accent/30",

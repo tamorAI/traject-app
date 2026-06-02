@@ -327,13 +327,13 @@ export function ProfileSettingsForm({
 
         <motion.div
           variants={cardReveal}
-          className="mt-4 sticky bottom-4 flex items-center justify-between rounded-2xl border bg-background/80 backdrop-blur-md px-5 py-3.5 shadow-sm"
+          className="mt-4 sticky bottom-4 flex items-center justify-between border bg-background/80 backdrop-blur-md px-5 py-3.5 shadow-sm"
         >
           <div className="flex items-center gap-2">
             {state?.success ? (
-              <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="flex h-2 w-2 bg-success animate-pulse" />
             ) : (
-              <span className="flex h-2 w-2 rounded-full bg-muted-foreground/30" />
+              <span className="flex h-2 w-2 bg-muted-foreground/30" />
             )}
             <p className="text-xs text-muted-foreground/70 font-mono">
               {state?.success

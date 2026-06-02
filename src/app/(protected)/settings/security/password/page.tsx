@@ -127,9 +127,9 @@ export default function PasswordSettingsPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="flex h-5 w-5 items-center justify-center rounded bg-muted text-muted-foreground">
-                  <KeyRound size={12} />
-                </span>
+                <div className="p-1 border bg-muted text-muted-foreground">
+                  <KeyRound />
+                </div>
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     Change Password

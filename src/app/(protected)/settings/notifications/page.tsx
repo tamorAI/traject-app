@@ -121,7 +121,7 @@ export default function NotificationsSettingsPage() {
       <motion.div variants={cardReveal}>
         <Card className="space-y-4 card-gradient-border">
           <CardHeader className="flex items-center gap-2">
-            <div className="rounded-xl p-2 border bg-muted text-muted-foreground">
+            <div className="p-1 border bg-muted text-muted-foreground">
               <Bell />
             </div>
             <div>
@@ -146,7 +146,7 @@ export default function NotificationsSettingsPage() {
                   <div className="group flex items-center justify-between rounded-lg px-3 py-2.5 transition-colors hover:bg-accent/30 -mx-3">
                     <div className="flex items-start gap-3">
                       <div
-                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground`}
+                        className={`flex h-8 w-8 shrink-0 items-center justify-center bg-muted text-muted-foreground`}
                       >
                         <Icon size={15} />
                       </div>

@@ -17,7 +17,7 @@ export default function SettingsLayout({
 
       <SettingsSidebar />
 
-      <div className="ml-2 flex-1 min-w-0 relative z-0">
+      <div className="md:ml-3 flex-1 min-w-0 relative z-0">
         <div className="max-w-3xl">{children}</div>
       </div>
     </div>

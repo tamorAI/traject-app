@@ -101,7 +101,7 @@ function NavMainItem({
                     isActive={isParentActive}
                     onClick={() => setActiveParent(item.title!)}
                     className={cn(
-                      "rounded-md text-sm font-medium px-3 py-2 h-9 transition-colors cursor-pointer",
+                      "text-sm font-medium px-3 py-2 h-9 transition-colors cursor-pointer",
                       isParentActive
                         ? "bg-primary! text-primary-foreground!"
                         : "",
