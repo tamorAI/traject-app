@@ -61,11 +61,15 @@ export function NavFooter({
                   </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="m-2">
-                  <DropdownMenuItem onClick={() => router.push("/settings/profile")}>
+                  <DropdownMenuItem
+                    onClick={() => router.push("/settings/profile")}
+                  >
                     <User size={16} className="opacity-80" aria-hidden="true" />
                     Profile
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push("/settings/general")}>
+                  <DropdownMenuItem
+                    onClick={() => router.push("/settings/general")}
+                  >
                     <Settings
                       size={16}
                       className="opacity-80"
@@ -109,7 +113,7 @@ export function NavFooter({
               </TooltipProvider>
             </div>
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+              <DropdownMenuTrigger>
                 <Button
                   size="icon"
                   variant="ghost"
