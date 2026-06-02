@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ChevronRight, LucideIcon } from "lucide-react";
 import { cn } from "@tamor/ui/lib/utils";
 import {
@@ -28,11 +30,28 @@ export type NavItem = {
   children?: NavItem[];
 };
 
+function getPathname(href?: string) {
+  return href?.split("#")[0] ?? "";
+}
+
+function matchesRoute(item: NavItem, pathname: string) {
+  if (!item.title || !item.href) return false;
+
+  const itemPathname = getPathname(item.href);
+
+  if (itemPathname !== pathname) {
+    return false;
+  }
+
+  if (itemPathname !== "/") {
+    return true;
+  }
+
+  return item.title === "Dashboard";
+}
+
 export function NavMain({ items }: { items: NavItem[] }) {
-  const [activeParent, setActiveParent] = React.useState<string | null>(
-    items.find((i) => !i.isSection)?.title || null,
-  );
-  const [activeChild, setActiveChild] = React.useState<string | null>(null);
+  const pathname = usePathname();
 
   return (
     <>
@@ -40,10 +59,7 @@ export function NavMain({ items }: { items: NavItem[] }) {
         <NavMainItem
           key={item.title || item.label || index}
           item={item}
-          activeParent={activeParent}
-          setActiveParent={setActiveParent}
-          activeChild={activeChild}
-          setActiveChild={setActiveChild}
+          pathname={pathname}
         />
       ))}
     </>
@@ -52,29 +68,15 @@ export function NavMain({ items }: { items: NavItem[] }) {
 
 function NavMainItem({
   item,
-  activeParent,
-  setActiveParent,
-  activeChild,
-  setActiveChild,
+  pathname,
 }: {
   item: NavItem;
-  activeParent: string | null;
-  activeChild: string | null;
-  setActiveParent: (val: string) => void;
-  setActiveChild: (val: string | null) => void;
+  pathname: string;
 }) {
   const hasChildren = !!item.children?.length;
-  const isParentActive = activeParent === item.title;
-  const [isOpen, setIsOpen] = React.useState(isParentActive);
+  const isRouteActive = matchesRoute(item, pathname);
+  const [isOpen, setIsOpen] = React.useState(isRouteActive);
 
-  // Sync open state when activeParent changes
-  React.useEffect(() => {
-    if (isParentActive) {
-      setIsOpen(true);
-    }
-  }, [isParentActive]);
-
-  // Section label
   if (item.isSection && item.label) {
     return (
       <SidebarGroup className="p-0 pt-5 first:pt-0">
@@ -85,7 +87,6 @@ function NavMainItem({
     );
   }
 
-  // Item with children → collapsible
   if (hasChildren && item.title) {
     return (
       <SidebarGroup className="p-0">
@@ -98,13 +99,10 @@ function NavMainItem({
                   <SidebarMenuButton
                     id={`nav-main-trigger-${item.title.toLowerCase().replace(/\s+/g, "-")}`}
                     tooltip={item.title}
-                    isActive={isParentActive}
-                    onClick={() => setActiveParent(item.title!)}
+                    isActive={isRouteActive}
                     className={cn(
                       "text-sm font-medium px-3 py-2 h-9 transition-colors cursor-pointer",
-                      isParentActive
-                        ? "bg-primary! text-primary-foreground!"
-                        : "",
+                      isRouteActive ? "bg-primary! text-primary-foreground!" : "",
                     )}
                   >
                     {item.icon && <item.icon size={16} />}
@@ -124,10 +122,7 @@ function NavMainItem({
                     <NavMainSubItem
                       key={child.title || index}
                       item={child}
-                      activeParent={activeParent}
-                      setActiveParent={setActiveParent}
-                      activeChild={activeChild}
-                      setActiveChild={setActiveChild}
+                      pathname={pathname}
                       parentTitle={item.title}
                     />
                   ))}
@@ -140,7 +135,6 @@ function NavMainItem({
     );
   }
 
-  // Item without children
   if (item.title) {
     return (
       <SidebarGroup className="p-0">
@@ -149,16 +143,12 @@ function NavMainItem({
             <SidebarMenuButton
               id={`nav-main-button-${item.title.toLowerCase().replace(/\s+/g, "-")}`}
               tooltip={item.title}
-              isActive={isParentActive}
-              onClick={() => {
-                setActiveParent(item.title!);
-                setActiveChild(null);
-              }}
+              isActive={isRouteActive}
               className={cn(
                 "rounded-md text-sm font-medium px-3 py-2 h-9 transition-colors cursor-pointer",
-                isParentActive ? "bg-primary! text-primary-foreground!" : "",
+                isRouteActive ? "bg-primary! text-primary-foreground!" : "",
               )}
-              render={<a href={item.href} />}
+              render={<Link href={item.href ?? "#"} prefetch={false} />}
             >
               {item.icon && <item.icon />}
               {item.title}
@@ -174,21 +164,16 @@ function NavMainItem({
 
 function NavMainSubItem({
   item,
-  activeParent,
-  setActiveParent,
-  activeChild,
-  setActiveChild,
+  pathname,
   parentTitle,
 }: {
   item: NavItem;
-  activeParent: string | null;
-  activeChild: string | null;
-  setActiveParent: (val: string) => void;
-  setActiveChild: (val: string | null) => void;
+  pathname: string;
   parentTitle?: string;
 }) {
   const hasChildren = !!item.children?.length;
-  const [isOpen, setIsOpen] = React.useState(false);
+  const isRouteActive = matchesRoute(item, pathname);
+  const [isOpen, setIsOpen] = React.useState(isRouteActive);
 
   if (hasChildren && item.title) {
     return (
@@ -218,10 +203,7 @@ function NavMainSubItem({
                 <NavMainSubItem
                   key={child.title || index}
                   item={child}
-                  activeParent={activeParent}
-                  setActiveParent={setActiveParent}
-                  activeChild={activeChild}
-                  setActiveChild={setActiveChild}
+                  pathname={pathname}
                   parentTitle={parentTitle}
                 />
               ))}
@@ -239,15 +221,13 @@ function NavMainSubItem({
           id={`nav-sub-button-${item.title.toLowerCase().replace(/\s+/g, "-")}`}
           className={cn(
             "w-full rounded-md transition-colors",
-            activeChild === item.title ? "bg-muted! text-foreground!" : "",
+            isRouteActive ? "bg-muted! text-foreground!" : "",
           )}
-          isActive={activeChild === item.title}
-          onClick={() => {
-            setActiveParent(parentTitle || "");
-            setActiveChild(item.title!);
-          }}
-          render={<a href={item.href}>{item.title}</a>}
-        />
+          isActive={isRouteActive}
+          render={<Link href={item.href ?? "#"} prefetch={false} />}
+        >
+          {item.title}
+        </SidebarMenuSubButton>
       </SidebarMenuSubItem>
     );
   }

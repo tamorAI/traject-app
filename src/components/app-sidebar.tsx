@@ -17,17 +17,21 @@ import { NavFooter } from "./nav-footer";
 
 export const navData: NavItem[] = [
   { label: "Observe", isSection: true },
-  { title: "Dashboard", icon: LayoutGrid, href: "/" },
-  { title: "Trajectories", icon: Activity, href: "#" },
-  { title: "Live feed", icon: Radio, href: "#" },
+  { title: "Dashboard", icon: LayoutGrid, href: "/#overview" },
+  { title: "Trajectories", icon: Activity, href: "/#trajectory-graph" },
+  { title: "Live feed", icon: Radio, href: "/#live-feed" },
 
   { label: "Govern", isSection: true },
-  { title: "Policies", icon: Shield, href: "#" },
-  { title: "Incidents", icon: AlertTriangle, href: "#" },
-  { title: "Audit log", icon: ScrollText, href: "#" },
+  { title: "Policies", icon: Shield, href: "/#governance" },
+  { title: "Incidents", icon: AlertTriangle, href: "/#incidents" },
+
+  { label: "Investigate", isSection: true },
+  { title: "Audit log", icon: ScrollText, href: "/#audit-log" },
+
+  { label: "Improve", isSection: true },
+  { title: "Agents", icon: Bot, href: "/#agents" },
 
   { label: "Configure", isSection: true },
-  { title: "Agents", icon: Bot, href: "#" },
   { title: "Settings", icon: Settings, href: "/settings/profile" },
 ];
 

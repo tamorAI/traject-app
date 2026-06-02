@@ -47,6 +47,15 @@ export function NavFooter({
   };
 }) {
   const router = useRouter();
+  const initials =
+    user.name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0])
+      .join("")
+      .toUpperCase() || "TR";
+
   return (
     <SidebarFooter className="p-4">
       <SidebarMenu>
@@ -57,10 +66,18 @@ export function NavFooter({
                 <DropdownMenuTrigger>
                   <Avatar className="h-8 w-8 rounded-full">
                     <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback className="rounded-full">CN</AvatarFallback>
+                    <AvatarFallback className="rounded-full">
+                      {initials}
+                    </AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="m-2">
+                  <DropdownMenuLabel className="space-y-0.5">
+                    <div className="text-sm font-medium">{user.name}</div>
+                    <div className="text-xs font-normal text-muted-foreground">
+                      {user.email}
+                    </div>
+                  </DropdownMenuLabel>
                   <DropdownMenuItem
                     onClick={() => router.push("/settings/profile")}
                   >
@@ -102,10 +119,10 @@ export function NavFooter({
                     className="py-1 px-2 m-2 max-w-[150px] border bg-popover text-popover-foreground"
                   >
                     <div className="space-y-1 text-xs">
-                      <p className="font-medium">User Information</p>
+                      <p className="font-medium">Account context</p>
                       <p className="text-muted-foreground">
-                        More details about the current user or section can be
-                        displayed here.
+                        Quick access to the signed-in account and workspace
+                        actions.
                       </p>
                     </div>
                   </TooltipContent>
@@ -124,14 +141,14 @@ export function NavFooter({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="pb-2">
-                <DropdownMenuLabel>Add New</DropdownMenuLabel>
+                <DropdownMenuLabel>Quick actions</DropdownMenuLabel>
                 <DropdownMenuItem>
                   <PlusCircle
                     size={16}
                     className="mr-2 opacity-80"
                     aria-hidden="true"
                   />
-                  Add New Item
+                  Create policy
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <BookmarkPlus
@@ -139,7 +156,7 @@ export function NavFooter({
                     className="mr-2 opacity-80"
                     aria-hidden="true"
                   />
-                  Add Bookmark
+                  Open incident review
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Puzzle
@@ -147,7 +164,7 @@ export function NavFooter({
                     className="mr-2 opacity-80"
                     aria-hidden="true"
                   />
-                  Add Integration
+                  Add integration
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
