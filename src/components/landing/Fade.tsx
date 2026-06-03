@@ -1,35 +1,75 @@
 "use client";
-import { motion } from "motion/react";
+import { motion, type Variants } from "motion/react";
 
-const container = {
+const springConfig = {
+  type: "spring" as const,
+  stiffness: 180,
+  damping: 20,
+  mass: 1.2,
+};
+
+const container: Variants = {
   hidden: {},
   show: {
     transition: {
       staggerChildren: 0.05,
-      delayChildren: 0.2,
+      delayChildren: 0.15,
     },
   },
-} as const;
+};
 
-const item = {
+const item: Variants = {
   hidden: {
     opacity: 0,
-    y: 16,
+    y: 20,
+    filter: "blur(6px)",
+    scale: 0.98,
+  },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    filter: "blur(0px)",
+    transition: {
+      ...springConfig,
+    },
+  },
+};
+
+const itemFast: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 12,
+    filter: "blur(3px)",
+  },
+  show: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: {
+      type: "spring",
+      stiffness: 220,
+      damping: 22,
+      mass: 0.8,
+    },
+  },
+};
+
+const scaleIn: Variants = {
+  hidden: {
+    opacity: 0,
+    scale: 0.92,
     filter: "blur(4px)",
   },
   show: {
     opacity: 1,
     scale: 1,
-    y: 0,
     filter: "blur(0px)",
     transition: {
-      type: "spring",
-      stiffness: 150,
-      damping: 19,
-      mass: 1.2,
+      ...springConfig,
     },
   },
-} as const;
+};
 
 function FadeContainer({
   children,
@@ -75,4 +115,32 @@ function FadeSpan({
   );
 }
 
-export { FadeContainer, FadeDiv, FadeSpan };
+function FadeInScale({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <motion.div variants={scaleIn} className={className}>
+      {children}
+    </motion.div>
+  );
+}
+
+function FadeInFast({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <motion.div variants={itemFast} className={className}>
+      {children}
+    </motion.div>
+  );
+}
+
+export { FadeContainer, FadeDiv, FadeSpan, FadeInScale, FadeInFast };

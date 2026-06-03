@@ -98,11 +98,17 @@ function AnimatedMetric({
     <motion.div
       ref={ref}
       variants={itemVariants}
-      className="rounded-xl border border-border/50 bg-card p-4"
+      whileHover={{ y: -1, transition: { duration: 0.2 } }}
+      className="rounded-xl border border-border/50 bg-card p-4 transition-shadow duration-300 hover:shadow-sm"
     >
       <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
         {trend === "up" ? (
-          <TrendingUp className="h-3 w-3 text-success" />
+          <motion.span
+            animate={{ y: [0, -1, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <TrendingUp className="h-3 w-3 text-success" />
+          </motion.span>
         ) : (
           <TrendingDown className="h-3 w-3 text-info" />
         )}
@@ -111,9 +117,9 @@ function AnimatedMetric({
       <div className="mt-2 text-2xl font-light tracking-tight tabular-nums">
         {isInView ? (
           <motion.span
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
+            initial={{ opacity: 0, y: 8, filter: "blur(4px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           >
             {Number.isInteger(displayValue)
               ? Math.round(displayValue)
@@ -137,17 +143,52 @@ export default function TrajectoryIntelligence() {
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border/50 bg-muted/50 px-4 py-1.5 text-xs text-muted-foreground">
+          <motion.div
+            initial={{ opacity: 0, y: 8, filter: "blur(4px)" }}
+            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            viewport={{ once: true }}
+            transition={{
+              type: "spring",
+              stiffness: 180,
+              damping: 20,
+              mass: 1,
+            }}
+            className="mb-4 inline-flex items-center gap-2 rounded-full border border-border/50 bg-muted/50 px-4 py-1.5 text-xs text-muted-foreground"
+          >
             Trajectory Intelligence
-          </div>
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+          </motion.div>
+          <motion.h2
+            initial={{ opacity: 0, y: 12, filter: "blur(4px)" }}
+            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            viewport={{ once: true }}
+            transition={{
+              delay: 0.1,
+              type: "spring",
+              stiffness: 180,
+              damping: 20,
+              mass: 1,
+            }}
+            className="text-3xl font-semibold tracking-tight sm:text-4xl"
+          >
             Learn how your agents think
-          </h2>
-          <p className="mt-4 text-muted-foreground">
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 12, filter: "blur(4px)" }}
+            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            viewport={{ once: true }}
+            transition={{
+              delay: 0.2,
+              type: "spring",
+              stiffness: 180,
+              damping: 20,
+              mass: 1,
+            }}
+            className="mt-4 text-muted-foreground"
+          >
             Trajeckt analyzes execution trajectories to uncover recurring
             failure modes, inefficient workflows, and successful planning
             strategies.
-          </p>
+          </motion.p>
         </div>
 
         <div className="mt-16 grid gap-8 lg:grid-cols-5">
@@ -196,17 +237,29 @@ export default function TrajectoryIntelligence() {
                       }}
                       onMouseEnter={() => setHoveredStep(index)}
                       onMouseLeave={() => setHoveredStep(null)}
+                      whileHover={{ x: 4 }}
                       className="flex items-center gap-3 cursor-default transition-opacity duration-300"
                     >
-                      <div
-                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border transition-all duration-300 ${
+                      <motion.div
+                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border transition-colors duration-300 ${
                           isDeviated
                             ? "border-warning/30 bg-warning/10 text-warning"
                             : "border-border/50 bg-muted text-muted-foreground"
-                        } ${isHovered ? "scale-110 shadow-md" : ""}`}
+                        }`}
+                        animate={{
+                          scale: isHovered ? 1.1 : 1,
+                          boxShadow: isHovered
+                            ? "0 4px 12px hsl(var(--foreground) / 0.08)"
+                            : "0 0px 0px hsl(var(--foreground) / 0)",
+                        }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 20,
+                        }}
                       >
                         <Icon className="h-4 w-4" />
-                      </div>
+                      </motion.div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <span
@@ -243,9 +296,22 @@ export default function TrajectoryIntelligence() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <span className="tabular-nums">{index + 1}</span>
+                        <motion.span
+                          className="tabular-nums"
+                          animate={{ color: isHovered ? "hsl(var(--foreground))" : "hsl(var(--muted-foreground))" }}
+                        >
+                          {index + 1}
+                        </motion.span>
                         {index < trajectoryGraph.length - 1 && (
-                          <ArrowUpRight className="h-3 w-3 rotate-45 text-muted-foreground/40" />
+                          <motion.div
+                            animate={{
+                              x: isHovered ? 2 : 0,
+                              opacity: isHovered ? 0.8 : 0.4,
+                            }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <ArrowUpRight className="h-3 w-3 rotate-45 text-muted-foreground/40" />
+                          </motion.div>
                         )}
                       </div>
                     </motion.div>
@@ -333,21 +399,27 @@ export default function TrajectoryIntelligence() {
               <motion.div
                 key={insight.label}
                 variants={itemVariants}
-                className="rounded-xl border border-border/50 bg-card p-4 transition-all duration-300 hover:border-border hover:-translate-y-0.5"
+                whileHover={{
+                  y: -2,
+                  borderColor: "hsl(var(--border))",
+                  transition: { duration: 0.2 },
+                }}
+                className="rounded-xl border border-border/50 bg-card p-4 transition-shadow duration-300 hover:shadow-sm"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
                     {insight.label}
                   </span>
-                  <span
+                  <motion.span
                     className={`text-xs font-medium tabular-nums ${
                       insight.trend === "up"
                         ? "text-success"
                         : "text-warning"
                     }`}
+                    whileHover={{ scale: 1.1 }}
                   >
                     {insight.value}
-                  </span>
+                  </motion.span>
                 </div>
                 <p className="mt-1.5 text-sm text-muted-foreground">
                   {insight.text}

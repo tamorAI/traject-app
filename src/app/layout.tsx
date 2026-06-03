@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Fraunces, Manrope } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ToastProvider } from "@tamor/ui/components/toast";
+import { CursorGlow } from "@/components/cursor-glow";
+import { ScrollProgress } from "@/components/scroll-progress";
 import "./globals.css";
 
 const sans = Manrope({
@@ -40,7 +42,11 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
         <ThemeProvider>
-          <ToastProvider>{children}</ToastProvider>
+          <ToastProvider>
+            <CursorGlow />
+            <ScrollProgress />
+            {children}
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -84,14 +84,28 @@ export default function LoginPage() {
                 )}
               </AnimatePresence>
             </div>
-            <Button
-              type="submit"
-              loading={pending}
-              size={"lg"}
-              className="w-full"
+            <motion.div
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
-              Sign in
-            </Button>
+              <Button
+                type="submit"
+                loading={pending}
+                size={"lg"}
+                className="w-full relative overflow-hidden"
+              >
+                <span className="relative z-10">Sign in</span>
+                {!pending && (
+                  <motion.span
+                    className="absolute inset-0 bg-foreground/5"
+                    initial={false}
+                    whileHover={{ opacity: 1 }}
+                    transition={{ duration: 0.2 }}
+                  />
+                )}
+              </Button>
+            </motion.div>
           </form>
         </CardContent>
         <CardFooter className="border-none bg-transparent flex flex-col gap-2">

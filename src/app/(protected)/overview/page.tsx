@@ -1,6 +1,12 @@
 "use client";
 
-import { motion } from "framer-motion";
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import {
   Activity,
   AlertTriangle,
@@ -690,13 +696,26 @@ const container = {
 };
 
 const cardReveal = {
-  hidden: { opacity: 0, y: 18, scale: 0.985 },
+  hidden: { opacity: 0, y: 18, scale: 0.985, filter: "blur(4px)" },
   visible: {
     opacity: 1,
     y: 0,
     scale: 1,
+    filter: "blur(0px)",
     transition: springConfig,
   },
+};
+
+const rowReveal = {
+  hidden: { opacity: 0, x: -8 },
+  visible: (i: number) => ({
+    opacity: 1,
+    x: 0,
+    transition: {
+      delay: i * 0.03,
+      ...springConfig,
+    },
+  }),
 };
 
 function getGreeting(date: Date) {
@@ -792,29 +811,50 @@ export default function DashboardPage() {
             {windowOptions.map((option) => {
               const isActive = timeWindow === option.value;
               return (
-                <Button
+                <motion.button
                   key={option.value}
-                  variant={isActive ? "default" : "outline"}
-                  size="sm"
                   onClick={() => setTimeWindow(option.value)}
-                  className="rounded-full px-4"
+                  className={`relative rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                    isActive
+                      ? "text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <span>{option.label}</span>
-                  <span className="ml-2 text-[10px] uppercase tracking-widest opacity-70">
-                    {option.hint}
+                  {isActive && (
+                    <motion.span
+                      layoutId="activeTimeWindow"
+                      className="absolute inset-0 rounded-full bg-primary"
+                      transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                    />
+                  )}
+                  <span className="relative z-10 flex items-center gap-2">
+                    <span>{option.label}</span>
+                    <span className="text-[10px] uppercase tracking-widest opacity-70">
+                      {option.hint}
+                    </span>
                   </span>
-                </Button>
+                </motion.button>
               );
             })}
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-          {frame.metrics.map((metric) => (
-            <Card
+          {frame.metrics.map((metric, mi) => (
+            <motion.div
               key={metric.label}
+              initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              transition={{
+                delay: 0.1 + mi * 0.06,
+                ...springConfig,
+              }}
+              whileHover={{ y: -2 }}
+            >
+            <Card
               size="sm"
-              className="relative overflow-hidden"
+              className="relative overflow-hidden transition-shadow duration-300 hover:shadow-md"
             >
               <CardHeader>
                 <div className="flex items-start justify-between gap-3">
@@ -860,6 +900,7 @@ export default function DashboardPage() {
                 </span>
               </CardFooter>
             </Card>
+            </motion.div>
           ))}
         </div>
 
@@ -1039,20 +1080,33 @@ export default function DashboardPage() {
                   </thead>
                   <tbody>
                     {frame.trajectories.map((trajectory, index) => (
-                      <tr
+                      <motion.tr
                         key={trajectory.id}
+                        custom={index}
+                        variants={rowReveal}
+                        initial="hidden"
+                        animate="visible"
                         className="group border-b border-border/30 last:border-b-0 transition-colors hover:bg-muted/40"
+                        whileHover={{
+                          backgroundColor: "hsl(var(--muted) / 0.6)",
+                          transition: { duration: 0.15 },
+                        }}
                       >
                         <td className="px-4 py-3 text-[10px] tabular-nums text-muted-foreground/50">
                           {String(index + 1).padStart(2, "0")}
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2.5">
+                            <motion.div
+                              whileHover={{ scale: 1.1 }}
+                              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                            >
                             <Avatar size="sm">
                               <AvatarFallback className="bg-muted text-[9px] font-medium text-muted-foreground transition-colors group-hover:bg-foreground/10">
                                 {trajectory.initials}
                               </AvatarFallback>
                             </Avatar>
+                            </motion.div>
                             <div className="space-y-0.5">
                               <div className="text-sm font-medium leading-tight">
                                 {trajectory.name}
@@ -1078,13 +1132,28 @@ export default function DashboardPage() {
                             className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5"
                           >
                             {trajectory.status === "Running" && (
-                              <span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
+                              <motion.span
+                                className="h-1.5 w-1.5 rounded-full bg-current"
+                                animate={{ opacity: [1, 0.3, 1], scale: [1, 1.3, 1] }}
+                                transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+                              />
                             )}
                             {trajectory.status === "Complete" && (
-                              <CheckCircle2 size={10} />
+                              <motion.span
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                              >
+                                <CheckCircle2 size={10} />
+                              </motion.span>
                             )}
                             {trajectory.status === "Escalated" && (
-                              <AlertTriangle size={10} />
+                              <motion.span
+                                animate={{ rotate: [0, 10, -10, 0] }}
+                                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                              >
+                                <AlertTriangle size={10} />
+                              </motion.span>
                             )}
                             {trajectory.status === "Awaiting approval" && (
                               <Clock3 size={10} />
@@ -1095,7 +1164,7 @@ export default function DashboardPage() {
                         <td className="hidden px-4 py-3 text-right text-xs tabular-nums text-muted-foreground sm:table-cell">
                           {trajectory.duration}
                         </td>
-                      </tr>
+                      </motion.tr>
                     ))}
                   </tbody>
                 </table>
@@ -1267,10 +1336,19 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="p-0">
               <div className="divide-y divide-border/40">
-                {frame.auditLog.map((event) => (
-                  <div
+                {frame.auditLog.map((event, i) => (
+                  <motion.div
                     key={`${event.time}-${event.message}`}
-                    className="flex items-center gap-3 px-3 py-3"
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{
+                      delay: i * 0.04,
+                      type: "spring",
+                      stiffness: 200,
+                      damping: 22,
+                    }}
+                    className="flex items-center gap-3 px-3 py-3 transition-colors hover:bg-muted/30"
+                    whileHover={{ x: 4 }}
                   >
                     <span className="min-w-[34px] shrink-0 text-xs font-mono tabular-nums text-muted-foreground/60">
                       {event.time}
@@ -1284,7 +1362,7 @@ export default function DashboardPage() {
                     >
                       {event.tag}
                     </Badge>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </CardContent>
@@ -1302,9 +1380,21 @@ export default function DashboardPage() {
               </div>
             </CardHeader>
             <Separator />
-            <CardContent className="grid grid-cols-3 gap-6 space-y-3">
-              {frame.agents.map((agent) => (
-                <div key={agent.name} className="border bg-muted/20 p-4">
+            <CardContent className="grid grid-cols-3 gap-6">
+              {frame.agents.map((agent, ai) => (
+                <motion.div
+                  key={agent.name}
+                  initial={{ opacity: 0, y: 12, filter: "blur(4px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  transition={{
+                    delay: ai * 0.08,
+                    type: "spring",
+                    stiffness: 200,
+                    damping: 22,
+                  }}
+                  whileHover={{ y: -2 }}
+                  className="border bg-muted/20 p-4 transition-shadow duration-300 hover:shadow-sm"
+                >
                   <div className="flex items-start justify-between gap-3">
                     <div className="space-y-1">
                       <div className="text-sm font-medium">{agent.name}</div>
@@ -1341,7 +1431,7 @@ export default function DashboardPage() {
                       </div>
                     </Card>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </CardContent>
           </Card>
