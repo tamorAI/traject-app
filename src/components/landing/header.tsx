@@ -39,7 +39,13 @@ export default function Header() {
       transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
       className={`sticky top-0 z-50 border-b`}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="relative mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="hidden lg:block absolute left-[0.5px] bottom-0 -translate-x-1/2 translate-y-1/2 text-muted-foreground/50 font-bold text-2xl leading-none pointer-events-none select-none z-10">
+          +
+        </div>
+        <div className="hidden lg:block absolute right-0 bottom-0 translate-x-1/2 translate-y-1/2 text-muted-foreground/50 font-bold text-2xl leading-none pointer-events-none select-none z-10">
+          +
+        </div>
         <Link href="/" className="group flex items-center gap-3">
           <motion.div
             whileHover={{ scale: 1.05, rotate: -4 }}

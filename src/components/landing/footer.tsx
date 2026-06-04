@@ -37,7 +37,13 @@ export default function Footer() {
       transition={{ duration: 0.45 }}
       className="relative border-t bg-background/60"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="hidden lg:block absolute left-[0.5px] top-0 -translate-x-1/2 -translate-y-1/2 text-muted-foreground/50 font-bold text-2xl leading-none pointer-events-none select-none z-10">
+          +
+        </div>
+        <div className="hidden lg:block absolute right-0 top-0 translate-x-1/2 -translate-y-1/2 text-muted-foreground/50 font-bold text-2xl leading-none pointer-events-none select-none z-10">
+          +
+        </div>
         <div className="grid gap-10 py-12 lg:grid-cols-[1.1fr_0.9fr] lg:py-16">
           <div className="max-w-xl">
             <Link href="/" className="group inline-flex items-center gap-3">
