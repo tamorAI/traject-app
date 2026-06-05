@@ -1,5 +1,6 @@
 import Header from "@/components/landing/header";
 import Hero from "@/components/landing/hero";
+import KillFrame from "@/components/landing/kill-frame";
 import FeaturesSection from "@/components/landing/features-section";
 import TrajectoryIntelligence from "@/components/landing/trajectory-intelligence";
 import CTASection from "@/components/landing/cta-section";
@@ -23,6 +24,8 @@ export default function LandingPage() {
 
       <Header />
       <Hero />
+      <GridDivider />
+      <KillFrame />
       <GridDivider />
       <FeaturesSection />
       <GridDivider />

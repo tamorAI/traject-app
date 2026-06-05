@@ -324,8 +324,10 @@ export default function Hero() {
           transition={{ delay: 0.08, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           className="mx-auto mt-8 max-w-4xl text-5xl font-semibold leading-[0.92] tracking-[-0.06em] sm:text-6xl lg:text-7xl xl:text-[5.5rem] font-heading"
         >
-          <span className="text-foreground">See inside your </span>
-          <span className="block text-foreground/70">AI agents' minds.</span>
+          <span className="text-foreground">
+            A single tool call <br /> can't be wrong Only
+          </span>
+          <span className="block text-foreground/70">the sequence can.</span>
         </motion.h1>
 
         <motion.p
@@ -334,9 +336,10 @@ export default function Hero() {
           transition={{ delay: 0.16, duration: 0.3 }}
           className="mx-auto mt-6 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg"
         >
-          Trajeckt turns every execution into a trajectory you can inspect,
-          approve, replay, and improve. Observe decision paths, enforce
-          boundaries before action, and learn from every recovery branch.
+          Every agent guardrail today inspects actions one at a time — so the
+          failures that only exist across steps walk right through. Trajeckt
+          enforces commitments across the whole trajectory, at runtime, below
+          the model, before any irreversible action fires.
         </motion.p>
 
         <motion.div
@@ -351,7 +354,7 @@ export default function Hero() {
             render={<Link href="/auth/signup" />}
           >
             <span className="relative z-10 flex items-center gap-2">
-              Start free trial
+              Request Demo
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </span>
           </Button>

@@ -17,7 +17,8 @@ const pillars = [
     id: "observe",
     icon: Activity,
     title: "Observe",
-    summary: "See how agents actually work, not how they were intended to work.",
+    summary:
+      "See how agents actually work, not how they were intended to work.",
     points: [
       "Execution timelines",
       "Decision paths",
@@ -56,7 +57,8 @@ const pillars = [
     id: "improve",
     icon: Sparkles,
     title: "Improve",
-    summary: "Turn trajectories into operating intelligence and benchmarkable data.",
+    summary:
+      "Turn trajectories into operating intelligence and benchmarkable data.",
     points: [
       "Success patterns",
       "Failure patterns",
@@ -182,9 +184,9 @@ export default function FeaturesSection() {
             transition={{ delay: 0.1, duration: 0.3 }}
             className="max-w-xl text-sm leading-6 text-muted-foreground sm:text-base"
           >
-            Trajeckt does for agent execution what Firecrawl does for live web data:
-            reveal the path, shape the guardrails, and surface the intelligence hidden
-            in every run.
+            Trajeckt does for agent execution what Firecrawl does for live web
+            data: reveal the path, shape the guardrails, and surface the
+            intelligence hidden in every run.
           </motion.p>
         </div>
 
@@ -208,25 +210,32 @@ export default function FeaturesSection() {
                 Why this matters
               </div>
               <div className="mt-1 text-lg font-medium tracking-[-0.02em] font-heading">
-                Logs tell you what happened. Trajectories tell you why it happened.
+                Logs tell you what happened. Trajectories tell you why it
+                happened.
               </div>
             </div>
-            <Button variant="outline" size="sm" render={<Link href="#intelligence" />}>
+            <Button
+              variant="outline"
+              size="sm"
+              render={<Link href="#intelligence" />}
+            >
               See trajectory intelligence
               <ArrowRight className="ml-2 h-3.5 w-3.5" />
             </Button>
           </div>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            {["Execution timelines", "Policy boundaries", "Benchmarked outcomes"].map(
-              (item) => (
-                <div
-                  key={item}
-                  className="border border-border/70 bg-muted/20 px-4 py-3 text-sm text-muted-foreground"
-                >
-                  {item}
-                </div>
-              ),
-            )}
+            {[
+              "Execution timelines",
+              "Policy boundaries",
+              "Benchmarked outcomes",
+            ].map((item) => (
+              <div
+                key={item}
+                className="border border-border/70 bg-muted/20 px-4 py-3 text-sm text-muted-foreground"
+              >
+                {item}
+              </div>
+            ))}
           </div>
         </motion.div>
       </div>
