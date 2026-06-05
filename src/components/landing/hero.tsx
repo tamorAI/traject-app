@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, Play } from "lucide-react";
 import { Button } from "@tamor/ui/components/button";
 import { motion, animate, useInView } from "motion/react";
+import { RequestDemoButton } from "@/components/request-demo-modal";
 
 const proofPoints = [
   { label: "Declared plan", value: "9 vertices" },
@@ -348,16 +349,15 @@ export default function Hero() {
           transition={{ delay: 0.22, duration: 0.3 }}
           className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row"
         >
-          <Button
+          <RequestDemoButton
             size="lg"
             className="group relative overflow-hidden rounded-none border border-foreground bg-foreground text-background text-base hover:bg-foreground"
-            render={<Link href="/auth/signup" />}
           >
             <span className="relative z-10 flex items-center gap-2">
               Request Demo
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </span>
-          </Button>
+          </RequestDemoButton>
           <Button
             variant="outline"
             size="lg"

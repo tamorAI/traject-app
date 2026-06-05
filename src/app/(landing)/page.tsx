@@ -6,9 +6,11 @@ import TrajectoryIntelligence from "@/components/landing/trajectory-intelligence
 import CTASection from "@/components/landing/cta-section";
 import Footer from "@/components/landing/footer";
 import GridDivider from "@/components/landing/grid-divider";
+import LandingShell from "@/components/landing/landing-shell";
 
 export default function LandingPage() {
   return (
+    <LandingShell>
     <main className="relative isolate overflow-hidden">
       <div
         className="hidden z-100 lg:block absolute inset-0 pointer-events-none"
@@ -34,5 +36,6 @@ export default function LandingPage() {
       <CTASection />
       <Footer />
     </main>
+    </LandingShell>
   );
 }

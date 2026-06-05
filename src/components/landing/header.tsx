@@ -10,6 +10,7 @@ import {
 } from "motion/react";
 import { Button } from "@tamor/ui/components/button";
 import Image from "next/image";
+import { RequestDemoButton } from "@/components/request-demo-modal";
 
 const navLinks = [
   { name: "Platform", href: "#platform" },
@@ -81,16 +82,15 @@ export default function Header() {
             whileTap={{ scale: 0.98 }}
             transition={springConfig}
           >
-            <Button
+            <RequestDemoButton
               size="lg"
               className="group relative overflow-hidden rounded-none px-4"
-              render={<Link href="/auth/signup" />}
             >
               <span className="relative z-10 flex items-center gap-1.5">
-                Sign In
+                Request Demo
                 <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
               </span>
-            </Button>
+            </RequestDemoButton>
           </motion.div>
         </div>
 
@@ -146,17 +146,12 @@ export default function Header() {
                 >
                   Sign in
                 </Button>
-                <Button
+                <RequestDemoButton
                   className="flex-1 rounded-none"
-                  render={
-                    <Link
-                      href="/auth/signup"
-                      onClick={() => setIsOpen(false)}
-                    />
-                  }
+                  onClick={() => setIsOpen(false)}
                 >
                   Request demo
-                </Button>
+                </RequestDemoButton>
               </div>
             </div>
           </motion.div>

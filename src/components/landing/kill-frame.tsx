@@ -403,7 +403,7 @@ export default function KillFrame() {
 
         {/* terminal */}
         <div
-          className={`border border-border bg-background ${shake ? "kt-shake" : ""} ${fading ? "kt-fade" : ""} h-full max-h-64 overflow-hidden`}
+          className={`border border-border bg-background ${shake ? "kt-shake" : ""} ${fading ? "kt-fade" : ""} h-full min-h-60 sm:min-h-50 overflow-hidden`}
           style={{ opacity: vis ? 1 : 0 }}
         >
           {/* header bar */}

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "motion/react";
 import Image from "next/image";
+import { useRequestDemo } from "@/components/request-demo-modal";
 
 const footerLinks = [
   {
@@ -17,17 +18,51 @@ const footerLinks = [
     title: "Get started",
     links: [
       { name: "Start free trial", href: "/auth/signup" },
-      { name: "Request demo", href: "/auth/signup" },
+      { name: "Request demo", href: "#", action: "request-demo" },
     ],
   },
   {
     title: "Resources",
     links: [
       { name: "Landing", href: "/" },
-      { name: "Request demo", href: "/auth/signup" },
+      { name: "Request demo", href: "#", action: "request-demo" },
     ],
   },
 ];
+
+function FooterLink({
+  href,
+  name,
+  action,
+}: {
+  href: string;
+  name: string;
+  action?: string;
+}) {
+  const { open } = useRequestDemo();
+
+  if (action === "request-demo") {
+    return (
+      <button
+        onClick={open}
+        className="group inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <span>{name}</span>
+        <span className="h-px w-4 origin-left scale-x-0 bg-foreground transition-transform duration-300 group-hover:scale-x-100" />
+      </button>
+    );
+  }
+
+  return (
+    <Link
+      href={href}
+      className="group inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+    >
+      <span>{name}</span>
+      <span className="h-px w-4 origin-left scale-x-0 bg-foreground transition-transform duration-300 group-hover:scale-x-100" />
+    </Link>
+  );
+}
 
 export default function Footer() {
   return (
@@ -85,17 +120,15 @@ export default function Footer() {
                   {group.title}
                 </div>
                 <ul className="mt-4 space-y-3">
-                  {group.links.map((link) => (
-                    <li key={link.name}>
-                      <Link
-                        href={link.href}
-                        className="group inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-                      >
-                        <span>{link.name}</span>
-                        <span className="h-px w-4 origin-left scale-x-0 bg-foreground transition-transform duration-300 group-hover:scale-x-100" />
-                      </Link>
-                    </li>
-                  ))}
+                    {group.links.map((link) => (
+                      <li key={link.name}>
+                        <FooterLink
+                          href={link.href}
+                          name={link.name}
+                          action={(link as { action?: string }).action}
+                        />
+                      </li>
+                    ))}
                 </ul>
               </div>
             ))}
