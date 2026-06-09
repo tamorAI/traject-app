@@ -1,0 +1,22 @@
+type ExtractSchema<T extends readonly any[]> = T[number];
+
+export const USER_TYPES = ["ADMIN", "TENANT_ADMIN", "USER"] as const;
+export type UserType = ExtractSchema<typeof USER_TYPES>;
+
+export const ORGANIZATION_ROLES = ["OWNER", "ADMIN", "MEMBER", "VIEWER"] as const;
+export type OrganizationRole = ExtractSchema<typeof ORGANIZATION_ROLES>;
+
+export const SUBSCRIPTION_TIERS = ["FREE", "STARTER", "PRO", "ENTERPRISE"] as const;
+export type SubscriptionTier = ExtractSchema<typeof SUBSCRIPTION_TIERS>;
+
+export const SUBSCRIPTION_STATUSES = ["ACTIVE", "CANCELED", "PAST_DUE", "TRIALING", "EXPIRED"] as const;
+export type SubscriptionStatus = ExtractSchema<typeof SUBSCRIPTION_STATUSES>;
+
+export const BILLING_CYCLES = ["MONTHLY", "YEARLY"] as const;
+export type BillingCycle = ExtractSchema<typeof BILLING_CYCLES>;
+
+export const AI_PROVIDERS = ["OPENAI", "ANTHROPIC", "GOOGLE", "CUSTOM"] as const;
+export type AiProvider = ExtractSchema<typeof AI_PROVIDERS>;
+
+export const INVITATION_STATUSES = ["PENDING", "ACCEPTED", "EXPIRED", "REVOKED"] as const;
+export type InvitationStatus = ExtractSchema<typeof INVITATION_STATUSES>;

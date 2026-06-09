@@ -1,0 +1,30 @@
+{
+  "name": "@traject/api",
+  "module": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --env-file=../../.env --bun --watch src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@better-auth/infra": "^0.2.13",
+    "@elysia/cors": "^1.4.2",
+    "@elysia/openapi": "^1.4.15",
+    "@elysia/opentelemetry": "^1.4.12",
+    "@opentelemetry/exporter-trace-otlp-proto": "^0.218.0",
+    "@opentelemetry/sdk-trace-node": "^2.7.1",
+    "@traject/database": "workspace:*",
+    "@traject/env": "workspace:*",
+    "better-auth": "^1.6.15",
+    "elysia": "^1.4.28",
+    "lru-cache": "^11.5.1",
+    "pino": "^10.3.1",
+    "pino-pretty": "^13.0.0",
+    "resend": "^6.12.4"
+  }
+}

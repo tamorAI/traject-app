@@ -1,0 +1,64 @@
+# Dependencies & build output
+node_modules
+**/node_modules
+bun.lockb
+npm-debug.log*
+yarn-error.log*
+.pnpm-store
+.pnp.*
+
+
+# tanstack
+.turbo
+.tanstack
+
+# others
+local_cache
+
+
+# Next.js build output
+.next
+out
+dist
+build
+
+# Turbo & Bun caches
+.turbo
+.cache
+.bun
+
+# Logs & temp
+logs
+*.log
+*.pid
+*.seed
+*.pid.lock
+tmp
+temp
+*.tmp
+
+# Git & local config
+.git
+.gitignore
+.gitattributes
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Editor / IDE files
+.vscode
+.idea
+*.swp
+
+# Docker
+docker-compose.override.yml
+Dockerfile.*
+
+# OS / misc
+*.bak
+*.old
