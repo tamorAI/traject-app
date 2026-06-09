@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@tamor/ui/components/button";
 import { motion, animate, useInView } from "motion/react";
 import { RequestDemoButton } from "@/components/request-demo-modal";
@@ -15,10 +15,10 @@ const proofPoints = [
 ];
 
 const stats = [
-  { value: "92%", label: "success rate" },
-  { value: "1.4", label: "avg replans" },
-  { value: "3%", label: "escalations" },
-  { value: "127", label: "violations blocked" },
+  { value: "100%", label: "probe actions blocked", isNumeric: true },
+  { value: "96.7%", label: "in plan calls allowed", isNumeric: true },
+  { value: "<2ms", label: "decision latency P95", isNumeric: false },
+  { value: "20/20", label: "plans verified", isNumeric: false },
 ];
 
 const networkNodes = [
@@ -124,135 +124,9 @@ function getEdgePath(
   const cpx = n1.x + dx / 2;
   const cpy = n1.y + dy / 2 + Math.abs(dx) * 0.08;
   return `M ${n1.x} ${n1.y} Q ${cpx} ${cpy} ${n2.x} ${n2.y}`;
-}
+};
 
-function TrajectoryNetwork() {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      <svg
-        viewBox="0 0 1440 850"
-        preserveAspectRatio="xMidYMid slice"
-        className="w-full h-full opacity-15 dark:opacity-30"
-      >
-        <defs>
-          <radialGradient id="coreGlow" cx="50%" cy="40%" r="45%">
-            <stop offset="0%" stopColor="currentColor" stopOpacity="0.06" />
-            <stop offset="60%" stopColor="currentColor" stopOpacity="0.02" />
-            <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
-          </radialGradient>
-        </defs>
-
-        <rect width="1440" height="850" fill="url(#coreGlow)" />
-
-        {flows.map(([i, j], idx) => {
-          const n1 = networkNodes[i];
-          const n2 = networkNodes[j];
-          if (!n1 || !n2) return null;
-          const d = getEdgePath(n1, n2);
-          const isHubEdge = hubs.includes(i) || hubs.includes(j);
-          return (
-            <g key={`flow-${idx}`}>
-              <path
-                d={d}
-                fill="none"
-                stroke="currentColor"
-                strokeOpacity={isHubEdge ? 0.1 : 0.05}
-                strokeWidth={isHubEdge ? 1.5 : 0.8}
-                className="text-foreground"
-              />
-              <path
-                d={d}
-                fill="none"
-                stroke="currentColor"
-                strokeOpacity={isHubEdge ? 0.2 : 0.1}
-                strokeWidth={isHubEdge ? 0.5 : 0.3}
-                strokeDasharray={isHubEdge ? "3 6" : "2 8"}
-                className="text-foreground"
-              >
-                <motion.animate
-                  attributeName="stroke-dashoffset"
-                  from="0"
-                  to={isHubEdge ? "-36" : "-40"}
-                  dur={isHubEdge ? "3s" : "5s"}
-                  repeatCount="indefinite"
-                />
-              </path>
-            </g>
-          );
-        })}
-
-        {networkNodes.map((node) => {
-          const isHub = hubs.includes(node.id);
-          const isEnd = node.id === 0 || node.id === 7 || node.id === 30;
-          return (
-            <g key={`node-${node.id}`}>
-              {isHub && (
-                <motion.circle
-                  cx={node.x}
-                  cy={node.y}
-                  r={node.r * 4}
-                  fill="none"
-                  stroke="currentColor"
-                  strokeOpacity={0.06}
-                  strokeWidth={0.5}
-                  className="text-foreground"
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: [0.8, 1.2, 0.8], opacity: [0, 0.15, 0] }}
-                  transition={{
-                    duration: 3,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                    delay: node.id * 0.1,
-                  }}
-                />
-              )}
-              {isEnd && (
-                <motion.circle
-                  cx={node.x}
-                  cy={node.y}
-                  r={node.r * 6}
-                  fill="none"
-                  stroke="currentColor"
-                  strokeOpacity={0.04}
-                  strokeWidth={0.3}
-                  className="text-foreground"
-                  initial={{ scale: 0.6, opacity: 0 }}
-                  animate={{ scale: [0.6, 1.4, 0.6], opacity: [0, 0.12, 0] }}
-                  transition={{
-                    duration: 4,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                    delay: node.id * 0.05,
-                  }}
-                />
-              )}
-              <motion.circle
-                cx={node.x}
-                cy={node.y}
-                r={isHub ? node.r * 1.4 : node.r}
-                fill="currentColor"
-                className="text-foreground"
-                initial={{ opacity: 0.2, scale: 0.5 }}
-                animate={{
-                  opacity: isHub ? [0.3, 0.7, 0.3] : [0.2, 0.5, 0.2],
-                  scale: isHub ? [1, 1.15, 1] : [1, 1.05, 1],
-                }}
-                transition={{
-                  duration: isHub ? 2.5 : 4,
-                  repeat: Number.POSITIVE_INFINITY,
-                  ease: "easeInOut",
-                  delay: node.id * 0.08,
-                }}
-              />
-            </g>
-          );
-        })}
-      </svg>
-    </div>
-  );
-}
-
-function AnimatedStat({ value, label }: { value: string; label: string }) {
+function AnimatedStat({ value, label, isNumeric }: { value: string; label: string, isNumeric: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-40px" });
   const [displayValue, setDisplayValue] = useState(0);
@@ -260,7 +134,7 @@ function AnimatedStat({ value, label }: { value: string; label: string }) {
   const isPercent = value.endsWith("%");
 
   useEffect(() => {
-    if (!isInView) return;
+    if (!isInView || !isNumeric) return;
     const controls = animate(0, numericValue, {
       duration: 1.2,
       ease: "easeOut",
@@ -269,18 +143,17 @@ function AnimatedStat({ value, label }: { value: string; label: string }) {
     return controls.stop;
   }, [isInView, numericValue]);
 
+  const rendered = isNumeric ? `${Number.isInteger(displayValue) ? Math.round(displayValue) : displayValue.toFixed(1)}${isPercent ? "%" : ""}` : value;
+
   return (
     <div ref={ref}>
       <div className="text-lg font-semibold tracking-[-0.04em] tabular-nums">
         {isInView ? (
           <>
-            {Number.isInteger(displayValue)
-              ? Math.round(displayValue)
-              : displayValue.toFixed(1)}
-            {isPercent ? "%" : ""}
-          </>
+            {rendered}
+            </>
         ) : (
-          "0"
+        "0"
         )}
       </div>
       <div className="mt-0.5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
@@ -303,20 +176,28 @@ export default function Hero() {
         }}
       />
 
-      <TrajectoryNetwork />
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div
+          className="mx-auto h-full max-w-7xl px-u1"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(90deg, color-mix(in srgb, currentColor 4%, transparent) 0 1px, transparent 1px calc(100% / 12))",
+          }}
+        />
+      </div>
 
       <div className="relative mx-auto max-w-5xl px-4 pb-12 sm:px-6 lg:px-8 lg:pb-20 text-center">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={mounted ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.3 }}
-          className="inline-flex items-center gap-2.5 border border-border bg-background px-4 py-1.5 text-xs text-muted-foreground"
+          className="uppercase inline-flex items-center gap-2.5 bg-background px-4 py-1.5 text-[10px] text-muted-foreground"
         >
           <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-foreground/40 opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-foreground" />
+            <span className="absolute inline-flex h-full w-full animate-ping bg-foreground/40 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 bg-foreground" />
           </span>
-          Understand, govern, and control how AI agents operate
+          Runtime Enforcement For AI Agents
         </motion.div>
 
         <motion.h1
@@ -326,9 +207,9 @@ export default function Hero() {
           className="mx-auto mt-8 max-w-4xl text-5xl font-semibold leading-[0.92] tracking-[-0.06em] sm:text-6xl lg:text-7xl xl:text-[5.5rem] font-heading"
         >
           <span className="text-foreground">
-            A single tool call <br /> can't be wrong Only
+            A single tool call is<br /> rarely the problem
           </span>
-          <span className="block text-foreground/70">the sequence can.</span>
+          <span className="block text-foreground/70">The sequence is.</span>
         </motion.h1>
 
         <motion.p
@@ -364,8 +245,8 @@ export default function Hero() {
             className="rounded-none border-border text-base"
             render={<Link href="#intelligence" />}
           >
-            <Play className="mr-2 h-4 w-4" />
-            View the platform
+            See it Blocked
+            <ArrowRight className="ml-3 h-4 w-4" />
           </Button>
         </motion.div>
 
@@ -376,23 +257,6 @@ export default function Hero() {
             transition={{ delay: 0.32, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             className="mt-12 border border-border bg-background shadow-[0_20px_60px_-52px_hsl(var(--foreground)/0.24)]"
           >
-            <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-2.5">
-              <div className="flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-foreground/40 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-foreground" />
-                </span>
-                Trajectory dashboard
-              </div>
-              <div className="text-[10px] font-mono text-muted-foreground/50">
-                {new Date().toLocaleTimeString("en-US", {
-                  hour12: false,
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}{" "}
-                UTC
-              </div>
-            </div>
             <div className="grid grid-cols-2 sm:grid-cols-4">
               {stats.map((stat, index) => (
                 <div
@@ -403,7 +267,7 @@ export default function Hero() {
                     index % 2 === 0 ? "border-r" : ""
                   } sm:border-b-0 sm:border-r sm:last:border-r-0 border-border`}
                 >
-                  <AnimatedStat value={stat.value} label={stat.label} />
+                  <AnimatedStat value={stat.value} label={stat.label} isNumeric={stat.isNumeric} />
                 </div>
               ))}
             </div>

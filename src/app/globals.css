@@ -10,8 +10,16 @@ This is the duplicate css from the tamor-ui
 @custom-variant fixed (&:is(.layout-fixed *));
 
 @theme inline {
+  --spacing-u05: 12px;
+  --spacing-u1: 24px;
+  --spacing-u2: 48px;
+  --spacing-u3: 72px;
+  --spacing-u4: 96px;
+  --spacing-u6: 144px;
+
   --breakpoint-3xl: 1600px;
   --breakpoint-4xl: 2000px;
+  --color-signal: var(--signal);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
@@ -72,6 +80,7 @@ This is the duplicate css from the tamor-ui
 
 :root {
   --radius: 0.625rem;
+  --signal: #DC2B00;
   --background: var(--color-white);
   --foreground: var(--color-neutral-800);
   --card: var(--color-white);
@@ -124,6 +133,7 @@ This is the duplicate css from the tamor-ui
 }
 
 .dark {
+  --signal: #D92700;
   --background: color-mix(
     in srgb,
     var(--color-neutral-950) 96%,

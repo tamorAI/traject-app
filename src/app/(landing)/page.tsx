@@ -1,12 +1,13 @@
 import Header from "@/components/landing/header";
 import Hero from "@/components/landing/hero";
-import KillFrame from "@/components/landing/kill-frame";
-import FeaturesSection from "@/components/landing/features-section";
 import TrajectoryIntelligence from "@/components/landing/trajectory-intelligence";
 import CTASection from "@/components/landing/cta-section";
 import Footer from "@/components/landing/footer";
 import GridDivider from "@/components/landing/grid-divider";
 import LandingShell from "@/components/landing/landing-shell";
+import InterceptionGrid from "@/components/landing/interception-grid";
+import IntegrationsSection from "@/components/landing/integration-section";
+import FeatureSection from "@/components/landing/feature-section";
 
 export default function LandingPage() {
   return (
@@ -27,11 +28,11 @@ export default function LandingPage() {
       <Header />
       <Hero />
       <GridDivider />
-      <KillFrame />
+      <InterceptionGrid />
       <GridDivider />
-      <FeaturesSection />
+      <FeatureSection />
       <GridDivider />
-      <TrajectoryIntelligence />
+      <IntegrationsSection />
       <GridDivider />
       <CTASection />
       <Footer />

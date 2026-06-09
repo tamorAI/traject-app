@@ -96,7 +96,7 @@ function TrajectoryArc() {
 function GridPattern() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      <svg className="w-full h-full opacity-[0.015]" viewBox="0 0 100 100">
+      <svg className="w-full h-full opacity-[0.020]" viewBox="0 0 100 100">
         <defs>
           <pattern
             id="grid"
@@ -135,7 +135,6 @@ export default function CTASection() {
           className="relative border border-border bg-background shadow-[0_24px_80px_-60px_hsl(var(--foreground)/0.24)]"
         >
           <GridPattern />
-          <TrajectoryArc />
 
           <div className="relative grid gap-0 lg:grid-cols-[1.15fr_0.85fr]">
             <div className="px-6 py-10 sm:px-10 sm:py-14 lg:px-14 lg:py-16">

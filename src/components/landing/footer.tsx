@@ -1,145 +1,123 @@
 "use client";
 
+import { Fragment } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
 import Image from "next/image";
-import { useRequestDemo } from "@/components/request-demo-modal";
+import { Switch } from "@tamor/ui/components/switch";
+import { useTheme } from "next-themes";
+import { Sun, Moon } from "lucide-react";
 
-const footerLinks = [
-  {
-    title: "Product",
-    links: [
-      { name: "Platform", href: "#platform" },
-      { name: "Intelligence", href: "#intelligence" },
-      { name: "Sign in", href: "/auth/login" },
-    ],
-  },
-  {
-    title: "Get started",
-    links: [
-      { name: "Start free trial", href: "/auth/signup" },
-      { name: "Request demo", href: "#", action: "request-demo" },
-    ],
-  },
-  {
-    title: "Resources",
-    links: [
-      { name: "Landing", href: "/" },
-      { name: "Request demo", href: "#", action: "request-demo" },
-    ],
-  },
-];
-
-function FooterLink({
-  href,
-  name,
-  action,
-}: {
-  href: string;
-  name: string;
-  action?: string;
-}) {
-  const { open } = useRequestDemo();
-
-  if (action === "request-demo") {
-    return (
-      <button
-        onClick={open}
-        className="group inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <span>{name}</span>
-        <span className="h-px w-4 origin-left scale-x-0 bg-foreground transition-transform duration-300 group-hover:scale-x-100" />
-      </button>
-    );
-  }
-
-  return (
-    <Link
-      href={href}
-      className="group inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-    >
-      <span>{name}</span>
-      <span className="h-px w-4 origin-left scale-x-0 bg-foreground transition-transform duration-300 group-hover:scale-x-100" />
-    </Link>
-  );
-}
+const trajectNavItems = [
+  { id: "hero",         name: "01 hero"         },
+  { id: "proof",        name: "02 proof"        },
+  { id: "capabilities", name: "03 capabilities" },
+  { id: "integrate",    name: "04 integrate"    },
+  { id: "action", name: "05 action" }
+] as const;
 
 export default function Footer() {
+  const { theme, setTheme } = useTheme();
+
   return (
     <motion.footer
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.45 }}
-      className="relative border-t bg-background/60"
+      className="relative border-t bg-background"
     >
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="hidden lg:block absolute left-[0.5px] top-0 -translate-x-1/2 -translate-y-1/2 text-muted-foreground/50 font-bold text-2xl leading-none pointer-events-none select-none z-10">
-          +
-        </div>
-        <div className="hidden lg:block absolute right-0 top-0 translate-x-1/2 -translate-y-1/2 text-muted-foreground/50 font-bold text-2xl leading-none pointer-events-none select-none z-10">
-          +
-        </div>
-        <div className="grid gap-10 py-12 lg:grid-cols-[1.1fr_0.9fr] lg:py-16">
-          <div className="max-w-xl">
-            <Link href="/" className="group inline-flex items-center gap-3">
-              <Image
-                src="/logo.png"
-                width={30}
-                height={30}
-                alt="traject-logo"
-              />
+      <div className="relative mx-auto max-w-7xl px-u1">
+
+        {/* BAND 1: identity row */}
+        <div className="flex items-start justify-between pt-u3 pb-u2">
+          <div>
+            <Link href="/" className="inline-flex items-center gap-3">
+              <Image src="/logo.png" width={30} height={30} alt="Trajeckt" />
             </Link>
-
-            <p className="mt-4 max-w-lg text-sm leading-6 text-muted-foreground">
-              Built for teams that need to observe execution, enforce
-              guardrails, and improve agent performance over time.
+            <p className="mt-u05 font-mono text-small text-muted-foreground">
+              Agent operations, without the guesswork.
             </p>
-
-            <div className="mt-6 flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              {[
-                "Trajectory visibility",
-                "Governance",
-                "Replay",
-                "Learning",
-              ].map((item) => (
-                <span
-                  key={item}
-                  className="border border-border/70 bg-background/70 px-3 py-1.5"
-                >
-                  {item}
-                </span>
-              ))}
-            </div>
           </div>
-
-          <div className="grid gap-8 sm:grid-cols-3">
-            {footerLinks.map((group) => (
-              <div key={group.title}>
-                <div className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-                  {group.title}
-                </div>
-                <ul className="mt-4 space-y-3">
-                    {group.links.map((link) => (
-                      <li key={link.name}>
-                        <FooterLink
-                          href={link.href}
-                          name={link.name}
-                          action={(link as { action?: string }).action}
-                        />
-                      </li>
-                    ))}
-                </ul>
+          <div className="flex items-start">
+            <div>
+              <div className="text-micro uppercase tracking-wider text-muted-foreground mb-u0.5">
+                CONTACT
               </div>
-            ))}
-          </div>
+              <a
+                href="mailto:founders@trajeckt.com"
+                className="font-mono text-small text-muted-foreground hover:text-foreground hover:underline underline-offset-4 transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2"
+              >
+                founders@trajeckt.com
+              </a>
+            </div> 
+           </div>
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-border/60 py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p>
-            &copy; {new Date().getFullYear()} Trajeckt. All rights reserved.
-          </p>
-          <p>Agent operations, without the guesswork.</p>
+        {/* BAND 2: trajectory row, navigation above the monument */}
+        <div className="flex items-center gap-x-2 border-t border-border h-u2 font-mono text-small">
+          <span className="text-micro uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
+            TRAJECTORY
+          </span>
+          {trajectNavItems.map((item, i) => (
+            <Fragment key={item.id}>
+              {i > 0 && (
+                <span className="text-muted-foreground/60" aria-hidden="true">
+                  →
+                </span>
+              )}
+              <a
+                href={`#${item.id}`}
+                className="text-muted-foreground hover:text-foreground hover:underline underline-offset-4 transition-colors focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2"
+              >
+                {item.name}
+              </a>
+            </Fragment>
+          ))}
+          <span className="ml-auto text-muted-foreground shrink-0">
+            ✓ plan held
+          </span>
+        </div>
+
+        {/* BAND 3 / monument: crop is in the viewBox coordinates, not CSS */}
+        <div
+          className="text-foreground/[0.10] dark:text-foreground/[0.12] leading-none mt-0 mb-0"
+          aria-hidden="true"
+          style={{
+            WebkitMaskImage:
+              "repeating-linear-gradient(to bottom, black 0 18px, transparent 18px 24px)",
+            maskImage:
+              "repeating-linear-gradient(to bottom, black 0 18px, transparent 18px 24px)",
+          }}
+        >
+          <svg
+            viewBox="0 0 1000 140"
+            className="block w-full"
+            preserveAspectRatio="none"
+          >
+            <text
+              x="0"
+              y="215"
+              fontSize="220"
+              fontWeight="700"
+              textLength="1000"
+              lengthAdjust="spacingAndGlyphs"
+              letterSpacing="-0.02em"
+              fill="currentColor"
+              className="font-heading"
+            >
+              Trajeckt
+            </text>
+          </svg>
+        </div>
+
+        {/* BAND 4: signature, border-t touches the monument's bottom edge */}
+        <div className="flex items-center justify-between border-t border-border py-u1 font-mono text-micro text-muted-foreground">
+          <span className="whitespace-nowrap">&copy; 2026 Trajeckt. All rights reserved.</span>
+          <div className="flex items-center gap-3">
+            <Switch onCheckedChange={() => setTheme(theme === "light" ? "dark" : "light")}/>    
+            <span className="text-muted-foreground text-micro font-mono">Theme</span> 
+          </div>
         </div>
       </div>
     </motion.footer>
