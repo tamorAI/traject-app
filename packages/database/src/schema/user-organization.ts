@@ -8,7 +8,7 @@ export const userOrganization = createTable(
   "user_organization",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    userId: uuid("user_id")
+    userId: text("user_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
     organizationId: uuid("organization_id")

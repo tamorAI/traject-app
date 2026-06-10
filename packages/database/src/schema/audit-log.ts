@@ -10,7 +10,7 @@ export const auditLog = createTable(
     organizationId: uuid("organization_id")
       .notNull()
       .references(() => organization.id, { onDelete: "cascade" }),
-    actorId: uuid("actor_id").references(() => user.id, { onDelete: "set null" }),
+    actorId: text("actor_id").references(() => user.id, { onDelete: "set null" }),
     action: text("action").notNull(),
     entityType: text("entity_type").notNull(),
     entityId: text("entity_id"),

@@ -10,6 +10,7 @@ import { signup } from "@/app/auth/actions";
 import Link from "next/link";
 import { AuthPageLayout } from "@/components/auth-layout";
 import { toastManager } from "@tamor/ui/components/toast";
+import { Spinner } from "@tamor/ui/components/spinner"
 
 export default function SignupPage() {
   const [state, formAction, pending] = useActionState(signup, undefined);
@@ -39,6 +40,28 @@ export default function SignupPage() {
       <Card className="bg-transparent rounded-none ring-0 w-full border-0">
         <CardContent>
           <form action={formAction} className="flex flex-col gap-8">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="name">Full name</Label>
+              <Input
+                id="name"
+                name="name"
+                type="text"
+                placeholder="John Doe"
+                required
+              />
+              <AnimatePresence>
+                {state?.error?.name && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4, height: 0 }}
+                    animate={{ opacity: 1, y: 0, height: "auto" }}
+                    exit={{ opacity: 0, y: -4, height: 0 }}
+                    className="text-xs text-destructive overflow-hidden"
+                  >
+                    {state.error.name[0]}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -94,15 +117,10 @@ export default function SignupPage() {
                 loading={pending}
                 className="w-full relative overflow-hidden"
               >
+              {pending && (
+                  <Spinner />
+              )}
                 <span className="relative z-10">Create account</span>
-                {!pending && (
-                  <motion.span
-                    className="absolute inset-0 bg-foreground/5"
-                    initial={false}
-                    whileHover={{ opacity: 1 }}
-                    transition={{ duration: 0.2 }}
-                  />
-                )}
               </Button>
             </motion.div>
           </form>

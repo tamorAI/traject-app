@@ -59,6 +59,7 @@ export const auth = betterAuth({
   },
   secret: API_ENV.BETTER_AUTH_SECRET!,
   baseURL: API_ENV.BETTER_AUTH_URL,
+  trustedOrigins: API_ENV.CORS_ORIGIN,
   advanced: {
     // Secure cookie defaults (adjust if deploying behind a reverse proxy)
     cookiePrefix: "auth",
@@ -69,5 +70,7 @@ export const auth = betterAuth({
       secure: API_ENV.NODE_ENV === "production",
       path: "/",
     },
+    // Allow server-to-server requests from Next.js server actions
+    disableCSRFCheck: API_ENV.NODE_ENV !== "production",
   },
 });

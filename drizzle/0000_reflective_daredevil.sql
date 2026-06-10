@@ -1,3 +1,19 @@
+CREATE TABLE "traject_account" (
+	"id" text PRIMARY KEY NOT NULL,
+	"account_id" text NOT NULL,
+	"provider_id" text NOT NULL,
+	"user_id" text NOT NULL,
+	"access_token" text,
+	"refresh_token" text,
+	"id_token" text,
+	"access_token_expires_at" timestamp,
+	"refresh_token_expires_at" timestamp,
+	"scope" text,
+	"password" text,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "traject_ai_model" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
@@ -16,7 +32,7 @@ CREATE TABLE "traject_ai_model" (
 CREATE TABLE "traject_ai_usage_log" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"organization_id" uuid NOT NULL,
-	"user_id" uuid,
+	"user_id" text,
 	"model_id" uuid,
 	"request_type" text DEFAULT 'chat' NOT NULL,
 	"prompt_tokens" integer DEFAULT 0 NOT NULL,
@@ -35,7 +51,7 @@ CREATE TABLE "traject_api_key" (
 	"key_hash" text NOT NULL,
 	"key_prefix" text NOT NULL,
 	"organization_id" uuid NOT NULL,
-	"created_by" uuid,
+	"created_by" text,
 	"last_used_at" timestamp with time zone,
 	"expires_at" timestamp with time zone,
 	"is_active" boolean DEFAULT true NOT NULL,
@@ -48,7 +64,7 @@ CREATE TABLE "traject_api_key" (
 CREATE TABLE "traject_audit_log" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"organization_id" uuid NOT NULL,
-	"actor_id" uuid,
+	"actor_id" text,
 	"action" text NOT NULL,
 	"entity_type" text NOT NULL,
 	"entity_id" text,
@@ -64,7 +80,7 @@ CREATE TABLE "traject_invitation" (
 	"organization_id" uuid NOT NULL,
 	"role" text DEFAULT 'MEMBER' NOT NULL,
 	"token" text NOT NULL,
-	"invited_by" uuid,
+	"invited_by" text,
 	"status" text DEFAULT 'PENDING' NOT NULL,
 	"expires_at" timestamp with time zone NOT NULL,
 	"accepted_at" timestamp with time zone,
@@ -90,7 +106,7 @@ CREATE TABLE "traject_organization" (
 CREATE TABLE "traject_prompt" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"organization_id" uuid,
-	"created_by" uuid,
+	"created_by" text,
 	"name" text NOT NULL,
 	"content" text NOT NULL,
 	"description" text,
@@ -101,6 +117,18 @@ CREATE TABLE "traject_prompt" (
 	"version" integer DEFAULT 1 NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "traject_session" (
+	"id" text PRIMARY KEY NOT NULL,
+	"expires_at" timestamp NOT NULL,
+	"token" text NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"ip_address" text,
+	"user_agent" text,
+	"user_id" text NOT NULL,
+	CONSTRAINT "traject_session_token_unique" UNIQUE("token")
 );
 --> statement-breakpoint
 CREATE TABLE "traject_subscription" (
@@ -122,25 +150,20 @@ CREATE TABLE "traject_subscription" (
 );
 --> statement-breakpoint
 CREATE TABLE "traject_user" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
+	"name" text NOT NULL,
 	"email" text NOT NULL,
-	"password_hash" text,
-	"name" text,
-	"avatar_url" text,
-	"user_type" text DEFAULT 'USER' NOT NULL,
-	"is_super_admin" boolean DEFAULT false NOT NULL,
+	"email_verified" boolean DEFAULT false NOT NULL,
+	"image" text,
 	"is_active" boolean DEFAULT true NOT NULL,
-	"timezone" text DEFAULT 'UTC' NOT NULL,
-	"locale" text DEFAULT 'en' NOT NULL,
-	"last_login_at" timestamp with time zone,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "traject_user_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
 CREATE TABLE "traject_user_organization" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"user_id" uuid NOT NULL,
+	"user_id" text NOT NULL,
 	"organization_id" uuid NOT NULL,
 	"role" text DEFAULT 'MEMBER' NOT NULL,
 	"is_default" boolean DEFAULT false NOT NULL,
@@ -149,6 +172,16 @@ CREATE TABLE "traject_user_organization" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "traject_verification" (
+	"id" text PRIMARY KEY NOT NULL,
+	"identifier" text NOT NULL,
+	"value" text NOT NULL,
+	"expires_at" timestamp NOT NULL,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
+ALTER TABLE "traject_account" ADD CONSTRAINT "traject_account_user_id_traject_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."traject_user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "traject_ai_usage_log" ADD CONSTRAINT "traject_ai_usage_log_organization_id_traject_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."traject_organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "traject_ai_usage_log" ADD CONSTRAINT "traject_ai_usage_log_user_id_traject_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."traject_user"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "traject_ai_usage_log" ADD CONSTRAINT "traject_ai_usage_log_model_id_traject_ai_model_id_fk" FOREIGN KEY ("model_id") REFERENCES "public"."traject_ai_model"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
@@ -160,6 +193,7 @@ ALTER TABLE "traject_invitation" ADD CONSTRAINT "traject_invitation_organization
 ALTER TABLE "traject_invitation" ADD CONSTRAINT "traject_invitation_invited_by_traject_user_id_fk" FOREIGN KEY ("invited_by") REFERENCES "public"."traject_user"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "traject_prompt" ADD CONSTRAINT "traject_prompt_organization_id_traject_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."traject_organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "traject_prompt" ADD CONSTRAINT "traject_prompt_created_by_traject_user_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."traject_user"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "traject_session" ADD CONSTRAINT "traject_session_user_id_traject_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."traject_user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "traject_subscription" ADD CONSTRAINT "traject_subscription_organization_id_traject_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."traject_organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "traject_user_organization" ADD CONSTRAINT "traject_user_organization_user_id_traject_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."traject_user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "traject_user_organization" ADD CONSTRAINT "traject_user_organization_organization_id_traject_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."traject_organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint

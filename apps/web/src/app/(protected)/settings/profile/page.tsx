@@ -1,18 +1,18 @@
-import { createClient } from "@/supabase/server";
+"use client";
+
 import { ProfileSettingsForm } from "@/components/profile-settings-form";
+import { useDashboardUser } from "@/components/dashboard-context";
 
-export default async function ProfileSettingsPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+export default function ProfileSettingsPage() {
+  const user = useDashboardUser();
 
+  const nameParts = (user?.name ?? "").split(" ");
   const profile = {
-    firstName: (user?.user_metadata?.first_name as string) ?? "",
-    lastName: (user?.user_metadata?.last_name as string) ?? "",
+    firstName: nameParts[0] ?? "",
+    lastName: nameParts.slice(1).join(" ") ?? "",
     email: user?.email ?? "",
-    phone: (user?.user_metadata?.phone as string) ?? "",
-    avatarUrl: (user?.user_metadata?.avatar_url as string) ?? null,
+    phone: "",
+    avatarUrl: (user?.avatar as string) ?? null,
   };
 
   return <ProfileSettingsForm initialData={profile} />;

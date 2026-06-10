@@ -6,6 +6,14 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve("../../"),
   },
+  async rewrites() {
+    return [
+      {
+        source: "/api/auth/:path*",
+        destination: "http://localhost:8001/api/auth/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;

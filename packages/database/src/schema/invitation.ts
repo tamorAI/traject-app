@@ -14,7 +14,7 @@ export const invitation = createTable(
       .references(() => organization.id, { onDelete: "cascade" }),
     role: text("role").$type<OrganizationRole>().notNull().default("MEMBER"),
     token: text("token").unique().notNull(),
-    invitedBy: uuid("invited_by").references(() => user.id, { onDelete: "set null" }),
+    invitedBy: text("invited_by").references(() => user.id, { onDelete: "set null" }),
     status: text("status").$type<InvitationStatus>().notNull().default("PENDING"),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
     acceptedAt: timestamp("accepted_at", { withTimezone: true }),

@@ -1,49 +1,16 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@tamor/ui/components/button";
 import { Input } from "@tamor/ui/components/input";
 import { Label } from "@tamor/ui/components/label";
 import { Card, CardContent } from "@tamor/ui/components/card";
-import { supabaseClient } from "@/supabase/client";
 import { updatePassword } from "@/app/auth/actions";
 import { AuthPageLayout } from "@/components/auth-layout";
 
 export default function UpdatePasswordPage() {
-  const [sessionReady, setSessionReady] = useState(false);
   const [state, formAction, pending] = useActionState(updatePassword, undefined);
-
-  useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabaseClient.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") {
-        setSessionReady(true);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  if (!sessionReady) {
-    return (
-      <AuthPageLayout
-        title="Update your password"
-        description="Use the link from your email to access this page."
-      >
-        <Card className="bg-transparent rounded-none ring-0 w-full border-0">
-          <CardContent className="flex justify-center py-8">
-            <motion.div
-              animate={{ opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-              className="w-6 h-6 rounded-full border-2 border-primary border-t-transparent"
-            />
-          </CardContent>
-        </Card>
-      </AuthPageLayout>
-    );
-  }
 
   return (
     <AuthPageLayout

@@ -1,11 +1,9 @@
 import * as z from "zod";
 
 const envSchema = z.object({
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
-  NEXT_PUBLIC_SUPABASE_URL: z.string(),
   NEXT_PUBLIC_SITE_URL: z.string().default("http://localhost:3000"),
   NODE_ENV: z.enum(["development", "production"]).default("development"),
-  SUPABASE_SERVICE_ROLE_KEY: z.string(),
+  API_URL: z.string().default("http://localhost:8001"),
   SMTP_HOST: z.string().optional(),
   SMTP_PORT: z.coerce.number().optional(),
   SMTP_SECURE: z.string().optional(),
@@ -20,13 +18,10 @@ function getEnv() {
   if (parsed.success) return parsed.data;
 
   return {
-    NEXT_PUBLIC_SUPABASE_ANON_KEY:
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
-    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
     NODE_ENV:
       (process.env.NODE_ENV as "development" | "production") ?? "development",
-    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
+    API_URL: process.env.API_URL ?? "http://localhost:8001",
     SMTP_HOST: process.env.SMTP_HOST ?? "",
     SMTP_PORT: Number(process.env.SMTP_PORT) || 587,
     SMTP_SECURE: process.env.SMTP_SECURE ?? "false",

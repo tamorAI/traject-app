@@ -2,7 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { createClient } from "@/supabase/server";
+import { cookies } from "next/headers";
+
+const API_URL = process.env.API_URL ?? "http://localhost:8001";
 
 type ActionResult = {
   error?: Record<string, string[]>;
@@ -12,13 +14,24 @@ type ActionResult = {
 const profileSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
-  phone: z.string().optional(),
 });
 
 const passwordSchema = z.object({
   currentPassword: z.string().min(1, "Current password is required"),
   newPassword: z.string().min(8, "Password must be at least 8 characters"),
 });
+
+async function apiFetch(path: string, options: RequestInit = {}) {
+  const cookieStore = await cookies();
+  return fetch(`${API_URL}${path}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      cookie: cookieStore.toString(),
+      ...options.headers,
+    },
+  });
+}
 
 export async function updateProfile(
   _prevState: unknown,
@@ -27,32 +40,22 @@ export async function updateProfile(
   const parsed = profileSchema.safeParse({
     firstName: formData.get("firstName"),
     lastName: formData.get("lastName"),
-    phone: formData.get("phone"),
   });
 
   if (!parsed.success) {
     return { error: parsed.error.flatten().fieldErrors };
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return { error: { form: ["Not authenticated"] } };
-  }
-
-  const { error } = await supabase.auth.updateUser({
-    data: {
-      first_name: parsed.data.firstName,
-      last_name: parsed.data.lastName,
-      phone: parsed.data.phone ?? null,
-    },
+  const res = await apiFetch("/api/auth/update-user", {
+    method: "POST",
+    body: JSON.stringify({
+      name: `${parsed.data.firstName} ${parsed.data.lastName}`,
+    }),
   });
 
-  if (error) {
-    return { error: { form: [error.message] } };
+  if (!res.ok) {
+    const data = await res.json();
+    return { error: { form: [data?.message ?? data?.error ?? "Failed to update profile"] } };
   }
 
   revalidatePath("/settings/profile");
@@ -72,30 +75,20 @@ export async function updatePassword(
     return { error: parsed.error.flatten().fieldErrors };
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user || !user.email) {
-    return { error: { form: ["Not authenticated"] } };
-  }
-
-  const { error: signInError } = await supabase.auth.signInWithPassword({
-    email: user.email,
-    password: parsed.data.currentPassword,
+  const res = await apiFetch("/api/auth/change-password", {
+    method: "POST",
+    body: JSON.stringify({
+      currentPassword: parsed.data.currentPassword,
+      newPassword: parsed.data.newPassword,
+    }),
   });
 
-  if (signInError) {
-    return { error: { currentPassword: ["Current password is incorrect"] } };
-  }
-
-  const { error } = await supabase.auth.updateUser({
-    password: parsed.data.newPassword,
-  });
-
-  if (error) {
-    return { error: { form: [error.message] } };
+  if (!res.ok) {
+    const data = await res.json();
+    if (res.status === 401 || res.status === 403) {
+      return { error: { currentPassword: ["Current password is incorrect"] } };
+    }
+    return { error: { form: [data?.message ?? data?.error ?? "Failed to update password"] } };
   }
 
   return { success: "Password updated successfully" };
@@ -105,15 +98,6 @@ export async function uploadAvatar(
   _prevState: unknown,
   formData: FormData,
 ): Promise<ActionResult & { avatarUrl?: string }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return { error: { form: ["Not authenticated"] } };
-  }
-
   const file = formData.get("avatar") as File | null;
   if (!file || file.size === 0) {
     return { error: { form: ["No file provided"] } };
@@ -128,61 +112,37 @@ export async function uploadAvatar(
     return { error: { form: ["File must be PNG, JPG, or WebP"] } };
   }
 
-  const fileExt = file.name.split(".").pop() || "png";
-  const filePath = `${user.id}/${Date.now()}.${fileExt}`;
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const base64 = buffer.toString("base64");
+  const dataUrl = `data:${file.type};base64,${base64}`;
 
-  const { error: uploadError } = await supabase.storage
-    .from("avatars")
-    .upload(filePath, file, {
-      cacheControl: "3600",
-      upsert: true,
-    });
-
-  if (uploadError) {
-    return { error: { form: [uploadError.message] } };
-  }
-
-  const {
-    data: { publicUrl },
-  } = supabase.storage.from("avatars").getPublicUrl(filePath);
-
-  const { error: updateError } = await supabase.auth.updateUser({
-    data: { avatar_url: publicUrl },
+  const cookieStore = await cookies();
+  const res = await fetch(`${API_URL}/api/auth/update-user`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      cookie: cookieStore.toString(),
+    },
+    body: JSON.stringify({ image: dataUrl }),
   });
 
-  if (updateError) {
-    return { error: { form: [updateError.message] } };
+  if (!res.ok) {
+    return { error: { form: ["Failed to upload avatar"] } };
   }
 
+  const data = await res.json();
   revalidatePath("/settings/profile");
-  return { success: "Avatar updated", avatarUrl: publicUrl };
+  return { success: "Avatar updated", avatarUrl: data?.user?.image ?? dataUrl };
 }
 
 export async function removeAvatar(): Promise<ActionResult> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return { error: { form: ["Not authenticated"] } };
-  }
-
-  const currentAvatarUrl = user.user_metadata?.avatar_url as string | undefined;
-  if (currentAvatarUrl) {
-    const urlParts = currentAvatarUrl.split("/avatars/");
-    if (urlParts.length > 1) {
-      const path = urlParts[1];
-      await supabase.storage.from("avatars").remove([path]);
-    }
-  }
-
-  const { error } = await supabase.auth.updateUser({
-    data: { avatar_url: null },
+  const res = await apiFetch("/api/auth/update-user", {
+    method: "POST",
+    body: JSON.stringify({ image: null }),
   });
 
-  if (error) {
-    return { error: { form: [error.message] } };
+  if (!res.ok) {
+    return { error: { form: ["Failed to remove avatar"] } };
   }
 
   revalidatePath("/settings/profile");

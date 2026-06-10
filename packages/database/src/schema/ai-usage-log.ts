@@ -11,7 +11,7 @@ export const aiUsageLog = createTable(
     organizationId: uuid("organization_id")
       .notNull()
       .references(() => organization.id, { onDelete: "cascade" }),
-    userId: uuid("user_id").references(() => user.id, { onDelete: "set null" }),
+    userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
     modelId: uuid("model_id").references(() => aiModel.id, { onDelete: "set null" }),
     requestType: text("request_type").notNull().default("chat"),
     promptTokens: integer("prompt_tokens").notNull().default(0),

@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ToastProvider } from "@tamor/ui/components/toast";
 import { CursorGlow } from "@/components/cursor-glow";
 import { ScrollProgress } from "@/components/scroll-progress";
+import { QueryProvider } from "@/providers/query-provider";
 import "./globals.css";
 import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
 
@@ -45,11 +46,13 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
         <ThemeProvider>
-          <ToastProvider>
-            <CursorGlow />
-            <ScrollProgress />
-            {children}
-          </ToastProvider>
+          <QueryProvider>
+            <ToastProvider>
+              <CursorGlow />
+              <ScrollProgress />
+              {children}
+            </ToastProvider>
+          </QueryProvider>
         </ThemeProvider>
       </body>
     </html>

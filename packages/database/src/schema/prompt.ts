@@ -10,7 +10,7 @@ export const prompt = createTable(
     organizationId: uuid("organization_id").references(() => organization.id, {
       onDelete: "cascade",
     }),
-    createdBy: uuid("created_by").references(() => user.id, { onDelete: "set null" }),
+    createdBy: text("created_by").references(() => user.id, { onDelete: "set null" }),
     name: text("name").notNull(),
     content: text("content").notNull(),
     description: text("description"),

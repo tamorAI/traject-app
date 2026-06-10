@@ -96,14 +96,6 @@ export default function LoginPage() {
                 className="w-full relative overflow-hidden"
               >
                 <span className="relative z-10">Sign in</span>
-                {!pending && (
-                  <motion.span
-                    className="absolute inset-0 bg-foreground/5"
-                    initial={false}
-                    whileHover={{ opacity: 1 }}
-                    transition={{ duration: 0.2 }}
-                  />
-                )}
               </Button>
             </motion.div>
           </form>
