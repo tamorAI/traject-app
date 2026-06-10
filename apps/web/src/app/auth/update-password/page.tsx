@@ -1,16 +1,25 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { Suspense, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@tamor/ui/components/button";
 import { Input } from "@tamor/ui/components/input";
 import { Label } from "@tamor/ui/components/label";
 import { Card, CardContent } from "@tamor/ui/components/card";
-import { updatePassword } from "@/app/auth/actions";
+import { useUpdatePassword } from "@/hooks/use-auth";
 import { AuthPageLayout } from "@/components/auth-layout";
+import { useSearchParams } from "next/navigation";
 
-export default function UpdatePasswordPage() {
-  const [state, formAction, pending] = useActionState(updatePassword, undefined);
+function UpdatePasswordForm() {
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token") ?? "";
+  const updatePassword = useUpdatePassword();
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updatePassword.mutate({ newPassword: password, token });
+  };
 
   return (
     <AuthPageLayout
@@ -19,7 +28,7 @@ export default function UpdatePasswordPage() {
     >
       <Card className="bg-transparent rounded-none ring-0 w-full border-0">
         <CardContent>
-          <form action={formAction} className="flex flex-col gap-8">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-8">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="password">New password</Label>
               <Input
@@ -27,51 +36,59 @@ export default function UpdatePasswordPage() {
                 name="password"
                 type="password"
                 placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              <AnimatePresence>
-                {state?.error?.password && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -4, height: 0 }}
-                    animate={{ opacity: 1, y: 0, height: "auto" }}
-                    exit={{ opacity: 0, y: -4, height: 0 }}
-                    className="text-sm text-destructive overflow-hidden"
-                  >
-                    {state.error.password[0]}
-                  </motion.p>
-                )}
-              </AnimatePresence>
             </div>
             <AnimatePresence>
-              {state?.error?.form && (
+              {updatePassword.isError && (
                 <motion.p
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
                   className="text-sm text-destructive text-center"
                 >
-                  {state.error.form[0]}
+                  {updatePassword.error?.message ?? "Failed to update password"}
                 </motion.p>
               )}
             </AnimatePresence>
             <AnimatePresence>
-              {state?.success && (
+              {updatePassword.isSuccess && (
                 <motion.p
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
                   className="text-sm text-success text-center"
                 >
-                  {state.success}
+                  Password updated successfully.
                 </motion.p>
               )}
             </AnimatePresence>
-            <Button type="submit" loading={pending} className="w-full">
+            <Button
+              type="submit"
+              loading={updatePassword.isPending}
+              className="w-full"
+            >
               Update password
             </Button>
           </form>
         </CardContent>
       </Card>
     </AuthPageLayout>
+  );
+}
+
+export default function UpdatePasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        </div>
+      }
+    >
+      <UpdatePasswordForm />
+    </Suspense>
   );
 }

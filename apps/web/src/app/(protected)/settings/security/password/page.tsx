@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useActionState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useMutation } from "@tanstack/react-query";
 import { SettingsPageHeader } from "@/components/settings-page-header";
 import {
   Card,
@@ -14,14 +15,13 @@ import { Label } from "@tamor/ui/components/label";
 import { Input } from "@tamor/ui/components/input";
 import { Button } from "@tamor/ui/components/button";
 import { toastManager } from "@tamor/ui/components/toast";
-import { updatePassword } from "@/app/(protected)/settings/actions";
+import { apiPost } from "@/lib/api/client";
 import {
   Lock,
   Eye,
   EyeOff,
   KeyRound,
   ShieldCheck,
-  CheckCircle2,
 } from "lucide-react";
 
 const springConfig = {
@@ -56,40 +56,47 @@ export default function PasswordSettingsPage() {
     confirm: false,
   });
   const [passwordStrength, setPasswordStrength] = useState(0);
-  const [passwordValue, setPasswordValue] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [state, formAction, pending] = useActionState(
-    updatePassword,
-    undefined,
-  );
-
-  useEffect(() => {
-    if (state?.success) {
+  const updatePassword = useMutation({
+    mutationFn: (data: { currentPassword: string; newPassword: string }) =>
+      apiPost("/change-password", data),
+    onSuccess: () => {
       toastManager.add({
         title: "Success",
-        description: state.success,
+        description: "Password updated successfully",
         type: "success",
       });
-    }
-    if (state?.error?.form) {
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setPasswordStrength(0);
+    },
+    onError: (err) => {
       toastManager.add({
         title: "Error",
-        description: state.error.form[0],
+        description: err.message,
         type: "error",
       });
-    }
-    if (state?.error?.currentPassword) {
-      toastManager.add({
-        title: "Error",
-        description: state.error.currentPassword[0],
-        type: "error",
-      });
-    }
-  }, [state]);
+    },
+  });
 
-  const simulateStrength = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setPasswordValue(val);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      toastManager.add({
+        title: "Error",
+        description: "Passwords do not match",
+        type: "error",
+      });
+      return;
+    }
+    updatePassword.mutate({ currentPassword, newPassword });
+  };
+
+  const simulateStrength = (val: string) => {
     const hasUpper = /[A-Z]/.test(val);
     const hasNumber = /[0-9]/.test(val);
     const hasSpecial = /[^A-Za-z0-9]/.test(val);
@@ -160,7 +167,7 @@ export default function PasswordSettingsPage() {
               )}
             </div>
           </CardHeader>
-          <form action={formAction}>
+          <form onSubmit={handleSubmit}>
             <CardContent className="space-y-5">
               <div className="space-y-2">
                 <Label htmlFor="currentPassword">Current Password</Label>
@@ -171,6 +178,8 @@ export default function PasswordSettingsPage() {
                     type={show.current ? "text" : "password"}
                     placeholder="Enter current password"
                     className="pr-10"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
                     required
                   />
                   <button
@@ -183,15 +192,6 @@ export default function PasswordSettingsPage() {
                     {show.current ? <EyeOff size={15} /> : <Eye size={15} />}
                   </button>
                 </div>
-                {state?.error?.currentPassword && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -4, height: 0 }}
-                    animate={{ opacity: 1, y: 0, height: "auto" }}
-                    className="text-sm text-destructive overflow-hidden"
-                  >
-                    {state.error.currentPassword[0]}
-                  </motion.p>
-                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="newPassword">New Password</Label>
@@ -202,7 +202,11 @@ export default function PasswordSettingsPage() {
                     type={show.new ? "text" : "password"}
                     placeholder="Enter new password"
                     className="pr-10"
-                    onChange={simulateStrength}
+                    value={newPassword}
+                    onChange={(e) => {
+                      setNewPassword(e.target.value);
+                      simulateStrength(e.target.value);
+                    }}
                     required
                   />
                   <button
@@ -237,15 +241,6 @@ export default function PasswordSettingsPage() {
                     ))}
                   </motion.div>
                 )}
-                {state?.error?.newPassword && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -4, height: 0 }}
-                    animate={{ opacity: 1, y: 0, height: "auto" }}
-                    className="text-sm text-destructive overflow-hidden"
-                  >
-                    {state.error.newPassword[0]}
-                  </motion.p>
-                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirm New Password</Label>
@@ -256,6 +251,8 @@ export default function PasswordSettingsPage() {
                     type={show.confirm ? "text" : "password"}
                     placeholder="Confirm new password"
                     className="pr-10"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                   />
                   <button
@@ -278,10 +275,9 @@ export default function PasswordSettingsPage() {
                 type="submit"
                 size="lg"
                 className="w-full"
-                loading={pending}
+                loading={updatePassword.isPending}
               >
-                {/* {!pending && <CheckCircle2 size={14} className="mr-1.5" />} */}
-                {pending ? "Updating..." : "Update Password"}
+                {updatePassword.isPending ? "Updating..." : "Update Password"}
               </Button>
             </CardContent>
           </form>

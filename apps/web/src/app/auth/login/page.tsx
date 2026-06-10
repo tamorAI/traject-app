@@ -1,28 +1,40 @@
 "use client";
 
-import { useEffect, useActionState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@tamor/ui/components/button";
 import { Input } from "@tamor/ui/components/input";
 import { Label } from "@tamor/ui/components/label";
 import { Card, CardContent, CardFooter } from "@tamor/ui/components/card";
-import { login } from "@/app/auth/actions";
+import { useLogin } from "@/hooks/use-auth";
+import { ApiError } from "@/lib/api/client";
 import Link from "next/link";
 import { AuthPageLayout } from "@/components/auth-layout";
 import { toastManager } from "@tamor/ui/components/toast";
 
 export default function LoginPage() {
-  const [state, formAction, pending] = useActionState(login, undefined);
+  const login = useLogin();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  useEffect(() => {
-    if (state?.error?.form) {
-      toastManager.add({
-        title: "Error",
-        description: state.error.form[0],
-        type: "error",
-      });
-    }
-  }, [state]);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) return;
+
+    login.mutate(
+      { email, password },
+      {
+        onError: (err) => {
+          const message = err instanceof ApiError ? err.message : "Invalid email or password. Please try again.";
+          toastManager.add({
+            title: "Sign in failed",
+            description: message,
+            type: "error",
+          });
+        },
+      },
+    );
+  };
 
   return (
     <AuthPageLayout
@@ -31,7 +43,7 @@ export default function LoginPage() {
     >
       <Card className="bg-transparent rounded-none ring-0 w-full border-0">
         <CardContent>
-          <form action={formAction} className="flex flex-col gap-8">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-8">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -39,20 +51,10 @@ export default function LoginPage() {
                 name="email"
                 type="email"
                 placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
-              <AnimatePresence>
-                {state?.error?.email && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -4, height: 0 }}
-                    animate={{ opacity: 1, y: 0, height: "auto" }}
-                    exit={{ opacity: 0, y: -4, height: 0 }}
-                    className="text-sm text-destructive overflow-hidden"
-                  >
-                    {state.error.email[0]}
-                  </motion.p>
-                )}
-              </AnimatePresence>
             </div>
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
@@ -69,20 +71,10 @@ export default function LoginPage() {
                 name="password"
                 type="password"
                 placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              <AnimatePresence>
-                {state?.error?.password && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -4, height: 0 }}
-                    animate={{ opacity: 1, y: 0, height: "auto" }}
-                    exit={{ opacity: 0, y: -4, height: 0 }}
-                    className="text-sm text-destructive overflow-hidden"
-                  >
-                    {state.error.password[0]}
-                  </motion.p>
-                )}
-              </AnimatePresence>
             </div>
             <motion.div
               whileHover={{ scale: 1.01 }}
@@ -91,7 +83,7 @@ export default function LoginPage() {
             >
               <Button
                 type="submit"
-                loading={pending}
+                loading={login.isPending}
                 size={"lg"}
                 className="w-full relative overflow-hidden"
               >
@@ -108,14 +100,6 @@ export default function LoginPage() {
               className="font-medium text-primary hover:underline"
             >
               Sign up
-            </Link>
-          </p>
-          <p className="text-sm text-muted-foreground hidden">
-            <Link
-              href="/auth/forgot-password"
-              className="font-medium text-primary hover:underline"
-            >
-              Forgot your password?
             </Link>
           </p>
         </CardFooter>

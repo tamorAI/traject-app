@@ -1,32 +1,27 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const authPaths = ["/auth/login", "/auth/signup"];
+const protectedRoutes = ["/overview", "/settings"] as const;
+const authRoutes = ["/auth/login", "/auth/signup", "/auth/forgot-password", "/auth/update-password"] as const;
 
-export async function proxy(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const isAuthPage = authPaths.some((p) => pathname.startsWith(p));
+  const isProtectedRoute = protectedRoutes.some((path) => pathname.startsWith(path));
+  const isAuthRoute = authRoutes.some((path) => pathname.startsWith(path));
 
-  if (!isAuthPage) {
-    return NextResponse.next();
+  const sessionCookie =
+    request.cookies.get("auth.session_token") ??
+    request.cookies.get("__Secure-auth.session_token");
+
+  if (isProtectedRoute && !sessionCookie) {
+    const loginUrl = new URL("/auth/login", request.url);
+    loginUrl.searchParams.set("redirect", pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
-  const cookie = request.headers.get("cookie") ?? "";
-
-  try {
-    const res = await fetch(`${process.env.API_URL ?? "http://localhost:8001"}/api/auth/get-session`, {
-      headers: { cookie },
-    });
-
-    const data = await res.json();
-    const hasSession = !!data?.user;
-
-    if (isAuthPage && hasSession) {
-      return NextResponse.redirect(new URL("/overview", request.url));
-    }
-  } catch {
-    // pass through if we can't reach the API
+  if (isAuthRoute && sessionCookie) {
+    return NextResponse.redirect(new URL("/overview", request.url));
   }
 
   return NextResponse.next();
@@ -34,6 +29,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.png$).*)",
   ],
 };

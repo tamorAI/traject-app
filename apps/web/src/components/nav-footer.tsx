@@ -25,7 +25,7 @@ import {
   TooltipTrigger,
 } from "@tamor/ui/components/tooltip";
 import { useRouter } from "next/navigation";
-import { signOut } from "@/app/auth/actions";
+import { useLogout } from "@/hooks/use-auth";
 import {
   BookmarkPlus,
   CircleHelp,
@@ -47,6 +47,7 @@ export function NavFooter({
   };
 }) {
   const router = useRouter();
+  const logout = useLogout();
   const initials =
     user.name
       .split(" ")
@@ -94,7 +95,7 @@ export function NavFooter({
                     />
                     Settings
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => signOut()}>
+                  <DropdownMenuItem onClick={() => logout.mutate()}>
                     <LogOut
                       size={16}
                       className="opacity-80"

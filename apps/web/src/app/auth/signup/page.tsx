@@ -1,36 +1,45 @@
 "use client";
 
-import { useEffect, useActionState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@tamor/ui/components/button";
 import { Input } from "@tamor/ui/components/input";
 import { Label } from "@tamor/ui/components/label";
 import { Card, CardContent, CardFooter } from "@tamor/ui/components/card";
-import { signup } from "@/app/auth/actions";
+import { useSignup } from "@/hooks/use-auth";
 import Link from "next/link";
 import { AuthPageLayout } from "@/components/auth-layout";
 import { toastManager } from "@tamor/ui/components/toast";
-import { Spinner } from "@tamor/ui/components/spinner"
+import { Spinner } from "@tamor/ui/components/spinner";
 
 export default function SignupPage() {
-  const [state, formAction, pending] = useActionState(signup, undefined);
+  const signup = useSignup();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  useEffect(() => {
-    if (state?.error?.form) {
-      toastManager.add({
-        title: "Error",
-        description: state.error.form[0],
-        type: "error",
-      });
-    }
-    if (state?.success) {
-      toastManager.add({
-        title: "Success",
-        description: state.success,
-        type: "success",
-      });
-    }
-  }, [state]);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    signup.mutate(
+      { name, email, password },
+      {
+        onSuccess: () => {
+          toastManager.add({
+            title: "Success",
+            description: "Account created successfully. You can now sign in.",
+            type: "success",
+          });
+        },
+        onError: (err) => {
+          toastManager.add({
+            title: "Error",
+            description: err.message,
+            type: "error",
+          });
+        },
+      },
+    );
+  };
 
   return (
     <AuthPageLayout
@@ -39,7 +48,7 @@ export default function SignupPage() {
     >
       <Card className="bg-transparent rounded-none ring-0 w-full border-0">
         <CardContent>
-          <form action={formAction} className="flex flex-col gap-8">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-8">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="name">Full name</Label>
               <Input
@@ -47,20 +56,10 @@ export default function SignupPage() {
                 name="name"
                 type="text"
                 placeholder="John Doe"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 required
               />
-              <AnimatePresence>
-                {state?.error?.name && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -4, height: 0 }}
-                    animate={{ opacity: 1, y: 0, height: "auto" }}
-                    exit={{ opacity: 0, y: -4, height: 0 }}
-                    className="text-xs text-destructive overflow-hidden"
-                  >
-                    {state.error.name[0]}
-                  </motion.p>
-                )}
-              </AnimatePresence>
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="email">Email</Label>
@@ -69,20 +68,10 @@ export default function SignupPage() {
                 name="email"
                 type="email"
                 placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
-              <AnimatePresence>
-                {state?.error?.email && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -4, height: 0 }}
-                    animate={{ opacity: 1, y: 0, height: "auto" }}
-                    exit={{ opacity: 0, y: -4, height: 0 }}
-                    className="text-xs text-destructive overflow-hidden"
-                  >
-                    {state.error.email[0]}
-                  </motion.p>
-                )}
-              </AnimatePresence>
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="password">Password</Label>
@@ -91,20 +80,10 @@ export default function SignupPage() {
                 name="password"
                 type="password"
                 placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              <AnimatePresence>
-                {state?.error?.password && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -4, height: 0 }}
-                    animate={{ opacity: 1, y: 0, height: "auto" }}
-                    exit={{ opacity: 0, y: -4, height: 0 }}
-                    className="text-xs text-destructive overflow-hidden"
-                  >
-                    {state.error.password[0]}
-                  </motion.p>
-                )}
-              </AnimatePresence>
             </div>
             <motion.div
               whileHover={{ scale: 1.01 }}
@@ -114,12 +93,10 @@ export default function SignupPage() {
               <Button
                 type="submit"
                 size="lg"
-                loading={pending}
+                loading={signup.isPending}
                 className="w-full relative overflow-hidden"
               >
-              {pending && (
-                  <Spinner />
-              )}
+                {signup.isPending && <Spinner />}
                 <span className="relative z-10">Create account</span>
               </Button>
             </motion.div>

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef, useActionState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useMutation } from "@tanstack/react-query";
 import { SettingsPageHeader } from "@/components/settings-page-header";
 import { Button } from "@tamor/ui/components/button";
 import { Input } from "@tamor/ui/components/input";
@@ -20,11 +21,9 @@ import {
 } from "@tamor/ui/components/avatar";
 import { Camera, AtSign, Phone, User, CheckCircle2 } from "lucide-react";
 import { toastManager } from "@tamor/ui/components/toast";
-import {
-  updateProfile,
-  uploadAvatar,
-  removeAvatar,
-} from "@/app/(protected)/settings/actions";
+import { apiPost } from "@/lib/api/client";
+import { useQueryClient } from "@tanstack/react-query";
+import { SESSION_KEY } from "@/hooks/use-auth";
 
 const springConfig = {
   type: "spring" as const,
@@ -62,31 +61,75 @@ export function ProfileSettingsForm({
     avatarUrl: string | null;
   };
 }) {
+  const queryClient = useQueryClient();
+  const [firstName, setFirstName] = useState(initialData.firstName);
+  const [lastName, setLastName] = useState(initialData.lastName);
   const [avatarHovered, setAvatarHovered] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(
     initialData.avatarUrl,
   );
-  const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [state, formAction, pending] = useActionState(updateProfile, undefined);
-
-  useEffect(() => {
-    if (state?.success) {
+  const updateProfile = useMutation({
+    mutationFn: (data: { name: string }) =>
+      apiPost("/update-user", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: SESSION_KEY });
       toastManager.add({
         title: "Success",
-        description: state.success,
+        description: "Profile updated successfully",
         type: "success",
       });
-    }
-    if (state?.error?.form) {
+    },
+    onError: (err) => {
       toastManager.add({
         title: "Error",
-        description: state.error.form[0],
+        description: err.message,
         type: "error",
       });
-    }
-  }, [state]);
+    },
+  });
+
+  const uploadAvatar = useMutation({
+    mutationFn: (data: { image: string }) =>
+      apiPost("/update-user", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: SESSION_KEY });
+      toastManager.add({
+        title: "Success",
+        description: "Avatar updated",
+        type: "success",
+      });
+    },
+    onError: (err) => {
+      toastManager.add({
+        title: "Error",
+        description: err.message,
+        type: "error",
+      });
+    },
+  });
+
+  const removeAvatar = useMutation({
+    mutationFn: () =>
+      apiPost("/update-user", { image: null }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: SESSION_KEY });
+      setAvatarPreview(null);
+      toastManager.add({
+        title: "Success",
+        description: "Avatar removed",
+        type: "success",
+      });
+    },
+    onError: (err) => {
+      toastManager.add({
+        title: "Error",
+        description: err.message,
+        type: "error",
+      });
+    },
+  });
 
   const initials =
     `${initialData.firstName.charAt(0) || ""}${initialData.lastName.charAt(0) || ""}`.toUpperCase() ||
@@ -96,51 +139,46 @@ export function ProfileSettingsForm({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setUploading(true);
-
-    const formData = new FormData();
-    formData.append("avatar", file);
-
-    const result = await uploadAvatar(undefined, formData);
-
-    if (result.error?.form) {
+    if (file.size > 2 * 1024 * 1024) {
       toastManager.add({
         title: "Error",
-        description: result.error.form[0],
+        description: "File size must be less than 2MB",
         type: "error",
       });
-    } else if (result.avatarUrl) {
-      setAvatarPreview(result.avatarUrl);
-      toastManager.add({
-        title: "Success",
-        description: "Avatar updated",
-        type: "success",
-      });
+      return;
     }
 
-    setUploading(false);
+    const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+    if (!allowedTypes.includes(file.type)) {
+      toastManager.add({
+        title: "Error",
+        description: "File must be PNG, JPG, or WebP",
+        type: "error",
+      });
+      return;
+    }
+
+    const buffer = await file.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+    let binary = "";
+    for (let i = 0; i < bytes.length; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    const base64 = btoa(binary);
+    const dataUrl = `data:${file.type};base64,${base64}`;
+
+    setAvatarPreview(dataUrl);
+    uploadAvatar.mutate({ image: dataUrl });
+
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   }
 
-  async function handleRemoveAvatar() {
-    const result = await removeAvatar();
-    if (result.error?.form) {
-      toastManager.add({
-        title: "Error",
-        description: result.error.form[0],
-        type: "error",
-      });
-    } else {
-      setAvatarPreview(null);
-      toastManager.add({
-        title: "Success",
-        description: "Avatar removed",
-        type: "success",
-      });
-    }
-  }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateProfile.mutate({ name: `${firstName} ${lastName}` });
+  };
 
   return (
     <motion.div
@@ -149,7 +187,7 @@ export function ProfileSettingsForm({
       animate="visible"
       className="max-w-2xl space-y-6"
     >
-      <form action={formAction}>
+      <form onSubmit={handleSubmit}>
         <SettingsPageHeader />
 
         <motion.div variants={cardReveal}>
@@ -220,11 +258,11 @@ export function ProfileSettingsForm({
                       variant="outline"
                       size="sm"
                       className="relative overflow-hidden group/btn"
-                      disabled={uploading}
+                      disabled={uploadAvatar.isPending}
                       onClick={() => fileInputRef.current?.click()}
                     >
                       <span className="relative z-10">
-                        {uploading ? "Uploading..." : "Upload new"}
+                        {uploadAvatar.isPending ? "Uploading..." : "Upload new"}
                       </span>
                       <motion.span
                         className="absolute inset-0 bg-accent"
@@ -237,8 +275,8 @@ export function ProfileSettingsForm({
                       variant="ghost"
                       size="sm"
                       className="text-muted-foreground hover:text-destructive transition-colors"
-                      disabled={uploading}
-                      onClick={handleRemoveAvatar}
+                      disabled={removeAvatar.isPending}
+                      onClick={() => removeAvatar.mutate()}
                     >
                       Remove
                     </Button>
@@ -274,7 +312,8 @@ export function ProfileSettingsForm({
                     id="firstName"
                     name="firstName"
                     placeholder="John"
-                    defaultValue={initialData.firstName}
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
@@ -283,7 +322,8 @@ export function ProfileSettingsForm({
                     id="lastName"
                     name="lastName"
                     placeholder="Doe"
-                    defaultValue={initialData.lastName}
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
                   />
                 </div>
               </div>
@@ -330,20 +370,24 @@ export function ProfileSettingsForm({
           className="mt-4 sticky bottom-4 flex items-center justify-between border bg-background/80 backdrop-blur-md px-5 py-3.5 shadow-sm"
         >
           <div className="flex items-center gap-2">
-            {state?.success ? (
+            {updateProfile.isSuccess ? (
               <span className="flex h-2 w-2 bg-success animate-pulse" />
             ) : (
               <span className="flex h-2 w-2 bg-muted-foreground/30" />
             )}
             <p className="text-xs text-muted-foreground/70 font-mono">
-              {state?.success
+              {updateProfile.isSuccess
                 ? "Changes saved"
                 : "Fill in your details and save"}
             </p>
           </div>
           <div className="flex gap-2">
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button type="submit" size="sm" loading={pending}>
+              <Button
+                type="submit"
+                size="sm"
+                loading={updateProfile.isPending}
+              >
                 <CheckCircle2 size={14} className="mr-1.5" />
                 Save changes
               </Button>

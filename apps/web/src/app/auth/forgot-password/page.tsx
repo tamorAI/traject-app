@@ -1,38 +1,43 @@
 "use client";
 
-import { useEffect, useActionState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@tamor/ui/components/button";
 import { Input } from "@tamor/ui/components/input";
 import { Label } from "@tamor/ui/components/label";
 import { Card, CardContent, CardFooter } from "@tamor/ui/components/card";
-import { forgotPassword } from "@/app/auth/actions";
+import { useForgotPassword } from "@/hooks/use-auth";
 import Link from "next/link";
 import { AuthPageLayout } from "@/components/auth-layout";
 import { toastManager } from "@tamor/ui/components/toast";
 
 export default function ForgotPasswordPage() {
-  const [state, formAction, pending] = useActionState(
-    forgotPassword,
-    undefined,
-  );
+  const forgotPassword = useForgotPassword();
+  const [email, setEmail] = useState("");
 
-  useEffect(() => {
-    if (state?.error?.form) {
-      toastManager.add({
-        title: "Error",
-        description: state.error.form[0],
-        type: "error",
-      });
-    }
-    if (state?.success) {
-      toastManager.add({
-        title: "Success",
-        description: state.success,
-        type: "success",
-      });
-    }
-  }, [state]);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    forgotPassword.mutate(
+      { email },
+      {
+        onSuccess: () => {
+          toastManager.add({
+            title: "Success",
+            description: "Check your email for the reset link.",
+            type: "success",
+          });
+          setEmail("");
+        },
+        onError: (err) => {
+          toastManager.add({
+            title: "Error",
+            description: err.message,
+            type: "error",
+          });
+        },
+      },
+    );
+  };
 
   return (
     <AuthPageLayout
@@ -41,7 +46,7 @@ export default function ForgotPasswordPage() {
     >
       <Card className="bg-transparent rounded-none ring-0 w-full border-0">
         <CardContent>
-          <form action={formAction} className="flex flex-col gap-8">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-8">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -49,22 +54,16 @@ export default function ForgotPasswordPage() {
                 name="email"
                 type="email"
                 placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
-              <AnimatePresence>
-                {state?.error?.email && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -4, height: 0 }}
-                    animate={{ opacity: 1, y: 0, height: "auto" }}
-                    exit={{ opacity: 0, y: -4, height: 0 }}
-                    className="text-xs text-destructive overflow-hidden"
-                  >
-                    {state.error.email[0]}
-                  </motion.p>
-                )}
-              </AnimatePresence>
             </div>
-            <Button type="submit" loading={pending} className="w-full">
+            <Button
+              type="submit"
+              loading={forgotPassword.isPending}
+              className="w-full"
+            >
               Send reset link
             </Button>
           </form>
