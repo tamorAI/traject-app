@@ -10,6 +10,7 @@ export * from "./ai-model";
 export * from "./ai-usage-log";
 export * from "./prompt";
 export * from "./session";
+export * from "./demo-request";
 export * from "./compiled-graph";
 export * from "./gateway-deployment";
 export * from "./enforcement-decision";

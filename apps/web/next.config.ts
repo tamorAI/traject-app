@@ -20,6 +20,10 @@ const nextConfig: NextConfig = {
         source: "/api/approvals/:path*",
         destination: "http://localhost:8001/approvals/:path*",
       },
+      {
+        source: "/api/request-demo",
+        destination: "http://localhost:8001/request-demo",
+      },
     ];
   },
 };

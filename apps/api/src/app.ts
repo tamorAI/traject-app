@@ -11,6 +11,7 @@ import { authRateLimit, globalRateLimit } from "@/middleware/rate-limiter";
 import { healthModule } from "@modules/health";
 import { enforcementModule } from "@modules/enforcement";
 import { approvalsModule } from "@modules/approvals";
+import { requestDemoModule } from "@modules/request-demo";
 
 export const createApplication = () => {
   const app = new Elysia()
@@ -91,7 +92,8 @@ export const createApplication = () => {
     }))
     .use(healthModule)
     .use(enforcementModule)
-    .use(approvalsModule);
+    .use(approvalsModule)
+    .use(requestDemoModule);
 
   if (API_ENV.ENABLE_AUTH) {
     app.use(authRateLimit);
