@@ -1,8 +1,9 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiClient, type SessionData } from "@/lib/api/client";
+import { apiClient, api, type SessionData, type OnboardingPayload } from "@/lib/api/client";
 import { setSessionCookie, clearSessionCookie } from "@/lib/auth/cookie";
+import { clearStoredOrg } from "@/lib/active-org";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 
@@ -42,7 +43,7 @@ export function useLogin() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SESSION_KEY });
-      router.push("/overview");
+      router.push("/org-select");
     },
   });
 }
@@ -65,7 +66,7 @@ export function useSignup() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SESSION_KEY });
-      router.push("/overview");
+      router.push("/org-select");
     },
   });
 }
@@ -80,6 +81,7 @@ export function useLogout() {
     },
     onSettled: () => {
       clearSessionCookie();
+      clearStoredOrg();
       queryClient.setQueryData(SESSION_KEY, { user: null, session: null });
       queryClient.removeQueries({ queryKey: SESSION_KEY });
       router.push("/auth/login");
@@ -133,4 +135,19 @@ export function useRefreshSession() {
   return useCallback(() => {
     queryClient.invalidateQueries({ queryKey: SESSION_KEY });
   }, [queryClient]);
+}
+
+export function useCompleteOnboarding() {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: async (data: OnboardingPayload) => {
+      await api.post("/api/onboarding/complete", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: SESSION_KEY });
+      router.push("/org-select");
+    },
+  });
 }

@@ -9,6 +9,7 @@ import { Button } from "@tamor/ui/components/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
@@ -64,45 +65,53 @@ export function NavFooter({
           <div className="flex items-center gap-2 justify-between">
             <div className="flex items-center gap-2">
               <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <Avatar className="h-8 w-8 rounded-full">
-                    <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback className="rounded-full">
-                      {initials}
-                    </AvatarFallback>
-                  </Avatar>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="m-2">
-                  <DropdownMenuLabel className="space-y-0.5">
-                    <div className="text-sm font-medium">{user.name}</div>
-                    <div className="text-xs font-normal text-muted-foreground">
-                      {user.email}
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuItem
-                    onClick={() => router.push("/settings/profile")}
-                  >
-                    <User size={16} className="opacity-80" aria-hidden="true" />
-                    Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => router.push("/settings/general")}
-                  >
-                    <Settings
-                      size={16}
-                      className="opacity-80"
-                      aria-hidden="true"
-                    />
-                    Settings
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => logout.mutate()}>
-                    <LogOut
-                      size={16}
-                      className="opacity-80"
-                      aria-hidden="true"
-                    />
-                    Logout
-                  </DropdownMenuItem>
+                <DropdownMenuTrigger
+                  render={
+                    <Avatar className="h-8 w-8 rounded-full">
+                      <AvatarImage src={user.avatar} alt={user.name} />
+                      <AvatarFallback className="rounded-full">
+                        {initials}
+                      </AvatarFallback>
+                    </Avatar>
+                  }
+                />
+                <DropdownMenuContent className="m-2 w-70!">
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="space-y-0.5">
+                      <div className="text-sm font-medium">{user.name}</div>
+                      <div className="text-xs font-normal text-muted-foreground">
+                        {user.email}
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem
+                      onClick={() => router.push("/settings/profile")}
+                    >
+                      <User
+                        size={16}
+                        className="opacity-80"
+                        aria-hidden="true"
+                      />
+                      Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => router.push("/settings/general")}
+                    >
+                      <Settings
+                        size={16}
+                        className="opacity-80"
+                        aria-hidden="true"
+                      />
+                      Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => logout.mutate()}>
+                      <LogOut
+                        size={16}
+                        className="opacity-80"
+                        aria-hidden="true"
+                      />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
 
@@ -131,42 +140,46 @@ export function NavFooter({
               </TooltipProvider>
             </div>
             <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="rounded-full shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                  aria-label="Open edit menu"
-                >
-                  <Plus size={16} aria-hidden="true" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="pb-2">
-                <DropdownMenuLabel>Quick actions</DropdownMenuLabel>
-                <DropdownMenuItem>
-                  <PlusCircle
-                    size={16}
-                    className="mr-2 opacity-80"
-                    aria-hidden="true"
-                  />
-                  Create policy
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <BookmarkPlus
-                    size={16}
-                    className="mr-2 opacity-80"
-                    aria-hidden="true"
-                  />
-                  Open incident review
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Puzzle
-                    size={16}
-                    className="mr-2 opacity-80"
-                    aria-hidden="true"
-                  />
-                  Add integration
-                </DropdownMenuItem>
+              <DropdownMenuTrigger
+                render={
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="rounded-full shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    aria-label="Open edit menu"
+                  >
+                    <Plus size={16} aria-hidden="true" />
+                  </Button>
+                }
+              />
+              <DropdownMenuContent className="pb-2 w-50!">
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>Quick actions</DropdownMenuLabel>
+                  <DropdownMenuItem>
+                    <PlusCircle
+                      size={16}
+                      className="mr-2 opacity-80"
+                      aria-hidden="true"
+                    />
+                    Create policy
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <BookmarkPlus
+                      size={16}
+                      className="mr-2 opacity-80"
+                      aria-hidden="true"
+                    />
+                    Open incident review
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Puzzle
+                      size={16}
+                      className="mr-2 opacity-80"
+                      aria-hidden="true"
+                    />
+                    Add integration
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

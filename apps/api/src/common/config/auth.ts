@@ -13,6 +13,16 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
+  user: {
+    additionalFields: {
+      onboardingCompleted: {
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+        input: false,
+      },
+    },
+  },
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 8,

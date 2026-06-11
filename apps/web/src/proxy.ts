@@ -1,13 +1,20 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const protectedRoutes = ["/overview", "/settings"] as const;
-const authRoutes = ["/auth/login", "/auth/signup", "/auth/forgot-password", "/auth/update-password"] as const;
+const protectedRoutes = ["/overview", "/settings", "/org-select"] as const;
+const authRoutes = [
+  "/auth/login",
+  "/auth/signup",
+  "/auth/forgot-password",
+  "/auth/update-password",
+] as const;
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const isProtectedRoute = protectedRoutes.some((path) => pathname.startsWith(path));
+  const isProtectedRoute = protectedRoutes.some((path) =>
+    pathname.startsWith(path),
+  );
   const isAuthRoute = authRoutes.some((path) => pathname.startsWith(path));
 
   const sessionCookie =

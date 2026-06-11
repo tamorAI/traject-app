@@ -5,6 +5,7 @@ export interface SessionData {
     email: string;
     image?: string | null;
     emailVerified: boolean;
+    onboardingCompleted: boolean;
     createdAt: string;
     updatedAt: string;
   } | null;
@@ -15,6 +16,11 @@ export interface SessionData {
     createdAt: string;
     updatedAt: string;
   } | null;
+}
+
+export interface OnboardingPayload {
+  name: string;
+  slug?: string;
 }
 
 export class ApiError extends Error {
@@ -186,6 +192,12 @@ function createApiClient(config: ApiClientConfig) {
 
 export const apiClient = createApiClient({
   basePath: "/api/auth",
+  retries: 1,
+  retryDelay: 500,
+});
+
+export const api = createApiClient({
+  basePath: "http://localhost:8001",
   retries: 1,
   retryDelay: 500,
 });

@@ -12,6 +12,8 @@ import { healthModule } from "@modules/health";
 import { enforcementModule } from "@modules/enforcement";
 import { approvalsModule } from "@modules/approvals";
 import { requestDemoModule } from "@modules/request-demo";
+import { onboardingModule } from "@modules/onboarding";
+import { organizationsModule } from "@modules/organizations";
 
 export const createApplication = () => {
   const app = new Elysia()
@@ -93,7 +95,9 @@ export const createApplication = () => {
     .use(healthModule)
     .use(enforcementModule)
     .use(approvalsModule)
-    .use(requestDemoModule);
+    .use(requestDemoModule)
+    .use(onboardingModule)
+    .use(organizationsModule);
 
   if (API_ENV.ENABLE_AUTH) {
     app.use(authRateLimit);

@@ -8,7 +8,8 @@ export const user = createTable("user",  {
 	email: text('email').notNull().unique(),
 	emailVerified: boolean('email_verified').notNull().default(false),
 	image: text('image'),
-  isActive: boolean("is_active").notNull().default(true),
+	isActive: boolean("is_active").notNull().default(true),
+	onboardingCompleted: boolean("onboarding_completed").notNull().default(false),
 	createdAt: timestamp('created_at').notNull().defaultNow(),
 	updatedAt: timestamp('updated_at').notNull().defaultNow(),
 }, (table) => ({
