@@ -8,6 +8,7 @@ import LandingShell from "@/components/landing/landing-shell";
 import InterceptionGrid from "@/components/landing/interception-grid";
 import IntegrationsSection from "@/components/landing/integration-section";
 import FeatureSection from "@/components/landing/feature-section";
+import Pricing from "@/components/landing/pricing";
 
 export default function LandingPage() {
   return (
@@ -33,6 +34,8 @@ export default function LandingPage() {
       <FeatureSection />
       <GridDivider />
       <IntegrationsSection />
+      <GridDivider />
+      <Pricing /> 
       <GridDivider />
       <CTASection />
       <Footer />
