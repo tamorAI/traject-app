@@ -38,6 +38,7 @@ import {
 } from "@tamor/ui/components/card";
 import { Separator } from "@tamor/ui/components/separator";
 import { Button } from "@tamor/ui/components/button";
+import { EnforcementStats } from "@/components/enforcement/enforcement-stats";
 import { useDashboardUser } from "@/components/dashboard-context";
 
 type TimeWindow = "24h" | "7d" | "30d";
@@ -938,6 +939,10 @@ export default function DashboardPage() {
             </Card>
           ))}
         </div> */}
+      </motion.section>
+
+      <motion.section variants={cardReveal} className="space-y-4">
+        <EnforcementStats />
       </motion.section>
 
       {/* xl:grid-cols-[1.4fr_.9fr]" */}

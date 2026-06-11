@@ -16,6 +16,7 @@ import {
   Webhook,
   Code2,
   ShieldCheck,
+  Clock3,
 } from "lucide-react";
 
 const sections = [
@@ -51,6 +52,11 @@ const sections = [
         icon: Webhook,
       },
       { label: "API Keys", href: "/settings/developer/api-keys", icon: Code2 },
+      {
+        label: "Approvals",
+        href: "/settings/developer/approvals",
+        icon: Clock3,
+      },
     ],
   },
 ];

@@ -23,6 +23,8 @@ export const navData: NavItem[] = [
 
   { label: "Govern", isSection: true },
   { title: "Policies", icon: Shield, href: "/#governance" },
+  { title: "Decisions", icon: AlertTriangle, href: "/enforcement/decisions" },
+  { title: "Deployments", icon: Radio, href: "/enforcement/deployments" },
   { title: "Incidents", icon: AlertTriangle, href: "/#incidents" },
 
   { label: "Investigate", isSection: true },

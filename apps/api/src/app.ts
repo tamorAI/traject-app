@@ -9,6 +9,8 @@ import { API_ENV } from "@traject/env/server";
 import { authModule } from "./modules/auth";
 import { authRateLimit, globalRateLimit } from "@/middleware/rate-limiter";
 import { healthModule } from "@modules/health";
+import { enforcementModule } from "@modules/enforcement";
+import { approvalsModule } from "@modules/approvals";
 
 export const createApplication = () => {
   const app = new Elysia()
@@ -87,7 +89,9 @@ export const createApplication = () => {
       docs: "/docs",
       health: "/health",
     }))
-    .use(healthModule);
+    .use(healthModule)
+    .use(enforcementModule)
+    .use(approvalsModule);
 
   if (API_ENV.ENABLE_AUTH) {
     app.use(authRateLimit);

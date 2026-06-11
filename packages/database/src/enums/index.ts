@@ -20,3 +20,15 @@ export type AiProvider = ExtractSchema<typeof AI_PROVIDERS>;
 
 export const INVITATION_STATUSES = ["PENDING", "ACCEPTED", "EXPIRED", "REVOKED"] as const;
 export type InvitationStatus = ExtractSchema<typeof INVITATION_STATUSES>;
+
+export const GRAPH_STATUSES = ["ACTIVE", "REVOKED", "SUPERSEDED"] as const;
+export type GraphStatus = ExtractSchema<typeof GRAPH_STATUSES>;
+
+export const DEPLOYMENT_STATUSES = ["ONLINE", "STALE", "OFFLINE"] as const;
+export type DeploymentStatus = ExtractSchema<typeof DEPLOYMENT_STATUSES>;
+
+export const DECISION_VERDICTS = ["ALLOW", "BLOCK", "ASK", "WARN"] as const;
+export type DecisionVerdict = ExtractSchema<typeof DECISION_VERDICTS>;
+
+export const APPROVAL_STATUSES = ["PENDING", "APPROVED", "DENIED", "EXPIRED"] as const;
+export type ApprovalStatus = ExtractSchema<typeof APPROVAL_STATUSES>;
