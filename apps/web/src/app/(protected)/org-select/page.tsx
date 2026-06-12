@@ -67,9 +67,9 @@ export default function OrgSelectPage() {
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-4 rounded-xl border border-border/50 p-4"
+                  className="flex items-center gap-4 border border-border/50 p-4"
                 >
-                  <Skeleton className="size-10 rounded-lg" />
+                  <Skeleton className="size-10" />
                   <div className="grid flex-1 gap-1">
                     <Skeleton className="h-4 w-32" />
                     <Skeleton className="h-3 w-20" />
