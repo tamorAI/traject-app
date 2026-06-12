@@ -3,7 +3,7 @@ type ExtractSchema<T extends readonly any[]> = T[number];
 export const USER_TYPES = ["ADMIN", "TENANT_ADMIN", "USER"] as const;
 export type UserType = ExtractSchema<typeof USER_TYPES>;
 
-export const ORGANIZATION_ROLES = ["OWNER", "ADMIN", "MEMBER", "VIEWER"] as const;
+export const ORGANIZATION_ROLES = ["ROLE_OWNER", "ROLE_ADMIN", "ROLE_MEMBER", "ROLE_VIEWER"] as const;
 export type OrganizationRole = ExtractSchema<typeof ORGANIZATION_ROLES>;
 
 export const SUBSCRIPTION_TIERS = ["FREE", "STARTER", "PRO", "ENTERPRISE"] as const;

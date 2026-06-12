@@ -8,7 +8,7 @@ export interface Organization {
   name: string;
   slug: string;
   logoUrl: string | null;
-  role: "OWNER" | "ADMIN" | "MEMBER" | "VIEWER";
+  role: "ROLE_OWNER" | "ROLE_ADMIN" | "ROLE_MEMBER" | "ROLE_VIEWER";
 }
 
 export const ORGS_KEY = ["organizations"];

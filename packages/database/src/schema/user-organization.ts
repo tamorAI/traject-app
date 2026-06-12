@@ -15,6 +15,8 @@ export const userOrganization = createTable(
       .notNull()
       .references(() => organization.id, { onDelete: "cascade" }),
     role: text("role").$type<OrganizationRole>().notNull().default("MEMBER"),
+    deniedPerms: text("denied_perms").array().notNull().default([]),
+    grantedPerms: text("granted_perms").array().notNull().default([]),
     isDefault: boolean("is_default").notNull().default(false),
     joinedAt: timestamp("joined_at", { withTimezone: true }).notNull().defaultNow(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

@@ -48,7 +48,7 @@ export const onboardingModule = new Elysia({ prefix: "/api/onboarding" })
         await tx.insert(userOrganization).values({
           userId: authUser.id,
           organizationId: createdOrg!.id,
-          role: "OWNER",
+          role: "ROLE_OWNER",
           isDefault: true,
         });
 
