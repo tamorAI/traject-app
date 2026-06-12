@@ -48,7 +48,7 @@ export default function Footer() {
                 href="mailto:founders@trajeckt.com"
                 className="font-mono text-small text-muted-foreground hover:text-foreground hover:underline underline-offset-4 transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2"
               >
-                founders@trajeckt.com
+                sandipgyawali100@gmail.com
               </a>
             </div> 
            </div>
