@@ -15,7 +15,7 @@ import { RequestDemoButton } from "@/components/request-demo-modal";
 const navLinks = [
   { name: "Platform", href: "#platform" },
   { name: "Intelligence", href: "#intelligence" },
-  { name: "Docs", href: "/docs" },
+  // { name: "Docs", href: "/docs" },
 ];
 
 const springConfig = {
