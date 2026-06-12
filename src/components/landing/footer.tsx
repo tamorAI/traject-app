@@ -45,7 +45,7 @@ export default function Footer() {
                 CONTACT
               </div>
               <a
-                href="mailto:founders@trajeckt.com"
+                href="mailto:sandipgyawali100@gmail.com"
                 className="font-mono text-small text-muted-foreground hover:text-foreground hover:underline underline-offset-4 transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-offset-2"
               >
                 sandipgyawali100@gmail.com
